@@ -12,5 +12,4 @@ type ScreenshotOptions struct {
 	Delay    time.Duration
 	EndDelay time.Duration
 	Clicks   []string
-	Retries  int
 }

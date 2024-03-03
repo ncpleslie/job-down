@@ -1,14 +1,18 @@
 package webrenderer
 
+import (
+	"net/url"
+)
+
 type Site struct {
-	URL      string
-	Name     string
-	Selector []string
+	HostUrl   string
+	Name      string
+	Selectors []string
 }
 
-func GetSite(url string) Site {
+func GetSite(url *url.URL) Site {
 	for _, site := range getSites() {
-		if site.URL == url {
+		if site.HostUrl == url.Host {
 			return site
 		}
 	}
@@ -19,9 +23,9 @@ func GetSite(url string) Site {
 func getSites() []Site {
 	return []Site{
 		{
-			URL:  "www.linkedin.com",
-			Name: "LinkedIn",
-			Selector: []string{
+			HostUrl: "www.linkedin.com",
+			Name:    "LinkedIn",
+			Selectors: []string{
 				".show-more-less-html__button.show-more-less-button.show-more-less-html__button--more",
 			},
 		},

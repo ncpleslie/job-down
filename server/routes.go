@@ -16,7 +16,7 @@ func addRoutes(
 	mux *http.ServeMux,
 	jobService *services.JobService,
 ) {
-	mux.Handle("GET /jobs/{userId}", handleAllJobsGet(jobService))
+	mux.Handle("GET /job/{userId}", handleAllJobsGet(jobService))
 	mux.Handle("GET /job/{userId}/{jobId}", handleJobGet(jobService))
 	mux.Handle("POST /job/{userId}", handleCreateJobPost(jobService))
 	mux.Handle("GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -47,16 +47,14 @@ func handleJobGet(jobService *services.JobService) http.HandlerFunc {
 // GET /job/{userId}
 func handleAllJobsGet(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// key := r.PathValue("key")
+		userId := r.PathValue("userId")
 
-		// value, err := kvService.Get(key)
-		// if err != nil {
-		// 	encode(w, r, http.StatusNotFound, models.KVErrorResponse{Error: fmt.Sprintf("key '%s' not found", key)})
+		jobs, err := jobService.GetJobs(r.Context(), userId)
+		if err != nil {
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error retrieving jobs. Error: %s", err.Error())})
+		}
 
-		// 	return
-		// }
-
-		// encode(w, r, http.StatusOK, models.KVResponse{Key: key, Value: value.(string)})
+		encode(w, r, http.StatusOK, responses.Jobs{Jobs: jobs})
 	}
 }
 
