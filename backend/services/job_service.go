@@ -31,6 +31,15 @@ func NewJobService(renderer *web.Renderer, storage *store.Storage, db *db.DB, lo
 	}
 }
 
+func (s *JobService) GetJob(ctx context.Context, userId string, jobId string) (responses.Job, error) {
+	job, err := s.DB.GetJob(ctx, userId, jobId)
+	if err != nil {
+		return responses.Job{}, err
+	}
+
+	return job.ToResponse(), nil
+}
+
 func (s *JobService) GetJobs(ctx context.Context, userId string) ([]responses.Job, error) {
 	jobs, err := s.DB.GetJobs(ctx, userId)
 	if err != nil {
@@ -40,14 +49,7 @@ func (s *JobService) GetJobs(ctx context.Context, userId string) ([]responses.Jo
 	// Convert job entities to job responses
 	var jobResponses []responses.Job
 	for _, job := range jobs {
-		jobResponses = append(jobResponses, responses.Job{
-			Id:            job.Id,
-			Position:      job.Position,
-			Company:       job.Company,
-			Url:           job.Url,
-			ImageFilename: job.ImageFilename,
-			ImageUrl:      job.ImageUrl,
-		})
+		jobResponses = append(jobResponses, job.ToResponse())
 	}
 
 	return jobResponses, nil
@@ -61,25 +63,13 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 		defer close(jobChan)
 		defer close(errChan)
 
-		jobEntity, err := s.DB.AddJob(ctx, userId, entities.Job{
-			Position: job.Position,
-			Company:  job.Company,
-			Url:      job.Url,
-		})
-
+		jobEntity, err := s.DB.AddJob(ctx, userId, entities.NewJobEntity(job))
 		if err != nil {
 			errChan <- err
 			return
 		}
 
-		jobChan <- responses.Job{
-			Id:            jobEntity.Id,
-			Position:      jobEntity.Position,
-			Company:       jobEntity.Company,
-			Url:           jobEntity.Url,
-			ImageFilename: jobEntity.ImageFilename,
-			ImageUrl:      jobEntity.ImageUrl,
-		}
+		jobChan <- jobEntity.ToResponse()
 
 		u, err := url.Parse(jobEntity.Url)
 		if err != nil {
@@ -108,15 +98,33 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 			return
 		}
 
-		jobChan <- responses.Job{
-			Id:            updatedJobEntity.Id,
-			Position:      updatedJobEntity.Position,
-			Company:       updatedJobEntity.Company,
-			Url:           updatedJobEntity.Url,
-			ImageFilename: updatedJobEntity.ImageFilename,
-			ImageUrl:      updatedJobEntity.ImageUrl,
-		}
+		jobChan <- updatedJobEntity.ToResponse()
 	}()
 
 	return jobChan, errChan
+}
+
+func (s *JobService) UpdateJob(ctx context.Context, userId string, jobId string, job requests.Job) (responses.Job, error) {
+	jobEntity, err := s.DB.GetJob(ctx, userId, jobId)
+	if err != nil {
+		return responses.Job{}, err
+	}
+
+	jobEntity.Position = job.Position
+	jobEntity.Company = job.Company
+	jobEntity.Url = job.Url
+	jobEntity.Status = job.Status
+
+	// TOOD: Check if Job URL has changed and update screenshot
+
+	updatedJobEntity, err := s.DB.UpdateJob(ctx, userId, jobId, jobEntity)
+	if err != nil {
+		return responses.Job{}, err
+	}
+
+	return updatedJobEntity.ToResponse(), nil
+}
+
+func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string) error {
+	return s.DB.DeleteJob(ctx, userId, jobId)
 }

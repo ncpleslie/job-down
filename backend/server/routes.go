@@ -18,30 +18,34 @@ func addRoutes(
 ) {
 	mux.Handle("GET /job/{userId}", handleAllJobsGet(jobService))
 	mux.Handle("GET /job/{userId}/{jobId}", handleJobGet(jobService))
-	mux.Handle("POST /job/{userId}", handleCreateJobPost(jobService))
+	mux.Handle("POST /job/{userId}", handleJobPost(jobService))
+	mux.Handle("PATCH /job/{userId}/jobId", handleJobPatch(jobService))
+	mux.Handle("DELETE /job/{userId}/{jobId}", handleJobDelete(jobService))
 	mux.Handle("GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	mux.Handle("/", http.NotFoundHandler())
 }
 
+// Returns a handler function for the GET /job/{userId}/{jobId} route.
+// It retrieves a job for the provided user ID from the JobService.
+//
+// GET /job/{userId}/{jobId}
 func handleJobGet(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		userId := r.PathValue("userId")
+		jobId := r.PathValue("jobId")
 
-		// key := r.PathValue("key")
+		job, err := jobService.GetJob(r.Context(), userId, jobId)
+		if err != nil {
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error retrieving job. Error: %s", err.Error())})
+		}
 
-		// value, err := kvService.Get(key)
-		// if err != nil {
-		// 	encode(w, r, http.StatusNotFound, models.KVErrorResponse{Error: fmt.Sprintf("key '%s' not found", key)})
-
-		// 	return
-		// }
-
-		// encode(w, r, http.StatusOK, models.KVResponse{Key: key, Value: value.(string)})
+		encode(w, r, http.StatusOK, job)
 	}
 }
 
-// Returns a handler function for the GET /{key} route.
+// Returns a handler function for the GET /job/{userId}/{jobId} route.
 // It retrieves all jobs for the provided user ID from the JobService.
 //
 // GET /job/{userId}
@@ -58,14 +62,14 @@ func handleAllJobsGet(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the POST /{key} route.
+// Returns a handler function for the POST /job/{userId}/{jobId} route.
 // It creates a new job for the provided user ID from the JobService.
 // Expect a response containing a Server-Sent Event.
 // The response will contain the job as it is created without a website screenshot url.
 // Then it will contain the job with the website screenshot url.
 //
 // POST /job/{userId}
-func handleCreateJobPost(jobService *services.JobService) http.HandlerFunc {
+func handleJobPost(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
@@ -87,6 +91,49 @@ func handleCreateJobPost(jobService *services.JobService) http.HandlerFunc {
 		if err := <-errChan; err != nil {
 			encodeSSE(w, err)
 		}
+	}
+}
+
+// Returns a handler function for the PATCH /job/{userId}/{jobId} route.
+// It updates a job for the provided user ID from the JobService.
+//
+// PATCH /job/{userId}/{jobId}
+func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userId := r.PathValue("userId")
+		jobId := r.PathValue("jobId")
+
+		job, err := decode[requests.Job](r)
+		if err != nil {
+			encode(w, r, http.StatusBadRequest, responses.Error{Message: fmt.Sprintf("Error decoding request body. Error: %s", err.Error())})
+
+			return
+		}
+
+		updateJob, updateErr := jobService.UpdateJob(r.Context(), userId, jobId, job)
+		if updateErr != nil {
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error updating job. Error: %s", err.Error())})
+		}
+
+		encode(w, r, http.StatusOK, updateJob)
+	}
+}
+
+// Returns a handler function for the DELETE /job/{userId}/{jobId} route.
+// It deletes a job for the provided user ID from the JobService.
+//
+// DELETE /job/{userId}/{jobId}
+func handleJobDelete(jobService *services.JobService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userId := r.PathValue("userId")
+		jobId := r.PathValue("jobId")
+
+		err := jobService.DeleteJob(r.Context(), userId, jobId)
+		if err != nil {
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error deleting job. Error: %s", err.Error())})
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

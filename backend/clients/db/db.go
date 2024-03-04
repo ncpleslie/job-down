@@ -29,6 +29,7 @@ func NewClient(app *firebase.App, log *log.Logger) *DB {
 }
 
 func (d *DB) AddJob(ctx context.Context, userId string, job entities.Job) (entities.Job, error) {
+	job.CreatedAt = firestore.ServerTimestamp.String()
 	docRef, _, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Add(ctx, job)
 	if err != nil {
 		d.Log.Println("DB: Error adding job to Firestore: ", err.Error())
@@ -42,10 +43,38 @@ func (d *DB) AddJob(ctx context.Context, userId string, job entities.Job) (entit
 		Url:           job.Url,
 		ImageFilename: job.ImageFilename,
 		ImageUrl:      job.ImageUrl,
+		CreatedAt:     job.CreatedAt,
+		UpdatedAt:     job.UpdatedAt,
+		Status:        job.Status,
+	}, nil
+}
+
+func (d *DB) GetJob(ctx context.Context, userId string, jobId string) (entities.Job, error) {
+	doc, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Doc(jobId).Get(ctx)
+	if err != nil {
+		d.Log.Println("DB: Error getting job from Firestore: ", err.Error())
+		return entities.Job{}, err
+	}
+
+	var job entities.Job
+	doc.DataTo(&job)
+	job.Id = doc.Ref.ID
+
+	return entities.Job{
+		Id:            job.Id,
+		Company:       job.Company,
+		Position:      job.Position,
+		Url:           job.Url,
+		ImageFilename: job.ImageFilename,
+		ImageUrl:      job.ImageUrl,
+		CreatedAt:     job.CreatedAt,
+		UpdatedAt:     job.UpdatedAt,
+		Status:        job.Status,
 	}, nil
 }
 
 func (d *DB) UpdateJob(ctx context.Context, userId string, jobId string, job entities.Job) (entities.Job, error) {
+	job.UpdatedAt = firestore.ServerTimestamp.String()
 	_, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Doc(jobId).Set(ctx, job)
 	if err != nil {
 		d.Log.Println("DB: Error updating job in Firestore: ", err.Error())
@@ -59,6 +88,9 @@ func (d *DB) UpdateJob(ctx context.Context, userId string, jobId string, job ent
 		Url:           job.Url,
 		ImageFilename: job.ImageFilename,
 		ImageUrl:      job.ImageUrl,
+		CreatedAt:     job.CreatedAt,
+		UpdatedAt:     job.UpdatedAt,
+		Status:        job.Status,
 	}, nil
 }
 
@@ -81,4 +113,14 @@ func (d *DB) GetJobs(ctx context.Context, userId string) ([]entities.Job, error)
 	}
 
 	return jobs, nil
+}
+
+func (d *DB) DeleteJob(ctx context.Context, userId string, jobId string) error {
+	_, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Doc(jobId).Delete(ctx)
+	if err != nil {
+		d.Log.Println("DB: Error deleting job from Firestore: ", err.Error())
+		return err
+	}
+
+	return nil
 }
