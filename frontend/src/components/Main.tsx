@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useGetJobByIdQuery } from "../hooks/use-query.hook";
+import { useAddJobMutation, useGetJobsQuery } from "../hooks/use-query.hook";
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -16,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import RequiredText from "./ui/required-text";
-
 import {
   Dialog,
   DialogClose,
@@ -25,30 +23,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import AllJobsTable from "./AllJobs";
 
 const Main: React.FC = () => {
   const [addNewJobDialogOpen, setAddNewJobDialogOpen] = useState(false);
-  const [jobId, setJobId] = useState<string>("");
 
-  const { data: jobData } = useGetJobByIdQuery(jobId);
+  const { data: allJobs } = useGetJobsQuery();
+
+  const { mutate } = useAddJobMutation();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    mutate(values);
+    setAddNewJobDialogOpen(false);
   };
 
   return (
     <div>
-      <h1>Main</h1>
-      {jobData && <p>{JSON.stringify(jobData)}</p>}
       <Button
         variant="outline"
         onClick={() => setAddNewJobDialogOpen((prev) => !prev)}
       >
         Add New Job
       </Button>
-      <CreateJobFormDialog onSubmit={onSubmit} open={addNewJobDialogOpen} />
+      <CreateJobFormDialog
+        onSubmit={onSubmit}
+        open={addNewJobDialogOpen}
+        onClose={() => setAddNewJobDialogOpen((prev) => !prev)}
+      />
+      {allJobs && <AllJobsTable jobs={allJobs.jobs} />}
     </div>
   );
 };
@@ -76,6 +79,7 @@ const formSchema = z.object({
 
 const CreateJobFormDialog: React.FC<CreateJobFormProps> = ({
   onSubmit,
+  onClose,
   open,
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -180,7 +184,7 @@ const CreateJobFormDialog: React.FC<CreateJobFormProps> = ({
               <DialogFooter className="flex w-full sm:justify-start md:justify-between">
                 <Button type="submit">Submit</Button>
                 <DialogClose asChild>
-                  <Button type="button" variant="secondary">
+                  <Button type="button" variant="secondary" onClick={onClose}>
                     Close
                   </Button>
                 </DialogClose>

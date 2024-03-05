@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpStatusToText } from "../lib/utils/http-status-to-text.util";
-import JobResponse from "../models/responses/job.response";
+import JobResponse, { JobResponseJson } from "../models/responses/job.response";
+import JobsResponse, {
+  JobsResponseJson,
+} from "@/models/responses/jobs.response";
 
 /**
  * A hook to get a job by its ID.
@@ -36,11 +39,25 @@ export const useGetJobsQuery = () => {
           "An error has occurred: " + httpStatusToText(response.status),
         );
       }
+      const jobs = (await response.json()) as JobsResponseJson;
 
-      return (await response.json()).map(
-        (job: JobResponse) => new JobResponse(job),
-      );
+      return new JobsResponse(jobs);
     },
+  });
+};
+
+export const useCreateJobQuery = () => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["createJob"],
+    queryFn: async () => {
+      const job = queryClient.getQueryData(["createJob"]) as JobResponse;
+
+      if (job) {
+        return job;
+      }
+    },
+    enabled: false,
   });
 };
 
@@ -49,7 +66,6 @@ export const useGetJobsQuery = () => {
  */
 export const useAddJobMutation = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (request: {
       position: string;
@@ -70,10 +86,29 @@ export const useAddJobMutation = () => {
         );
       }
 
-      return new JobResponse(await response.json());
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getJobs"] });
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("Failed to get reader from stream");
+      }
+
+      const readChunk = async () => {
+        const { value, done } = await reader.read();
+        if (done) {
+          return;
+        }
+
+        const chunkString = new TextDecoder().decode(value);
+        queryClient.setQueryData(
+          ["createJob"],
+          () => new JobResponse(JSON.parse(chunkString)),
+        );
+        queryClient.invalidateQueries({ queryKey: ["getJobs"] });
+        queryClient.refetchQueries({ queryKey: ["getJobs"] });
+
+        readChunk();
+      };
+
+      readChunk();
     },
   });
 };

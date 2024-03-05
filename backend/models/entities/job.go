@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"time"
+
 	"github.com/ncpleslie/application-tracker/models/requests"
 	"github.com/ncpleslie/application-tracker/models/responses"
 )
@@ -12,8 +14,8 @@ type Job struct {
 	Url           string
 	ImageFilename string
 	ImageUrl      string
-	CreatedAt     string
-	UpdatedAt     string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	Status        string
 }
 
@@ -34,8 +36,8 @@ func (job Job) ToResponse() responses.Job {
 		Url:           job.Url,
 		ImageFilename: job.ImageFilename,
 		ImageUrl:      job.ImageUrl,
-		CreatedAt:     job.CreatedAt,
-		UpdatedAt:     job.UpdatedAt,
+		CreatedAt:     job.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     job.UpdatedAt.Format(time.RFC3339),
 		Status:        job.Status,
 	}
 }

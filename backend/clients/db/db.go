@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"log"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
@@ -29,7 +30,7 @@ func NewClient(app *firebase.App, log *log.Logger) *DB {
 }
 
 func (d *DB) AddJob(ctx context.Context, userId string, job entities.Job) (entities.Job, error) {
-	job.CreatedAt = firestore.ServerTimestamp.String()
+	job.CreatedAt = time.Now()
 	docRef, _, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Add(ctx, job)
 	if err != nil {
 		d.Log.Println("DB: Error adding job to Firestore: ", err.Error())
@@ -74,7 +75,7 @@ func (d *DB) GetJob(ctx context.Context, userId string, jobId string) (entities.
 }
 
 func (d *DB) UpdateJob(ctx context.Context, userId string, jobId string, job entities.Job) (entities.Job, error) {
-	job.UpdatedAt = firestore.ServerTimestamp.String()
+	job.UpdatedAt = time.Now()
 	_, err := d.Client.Collection("users").Doc(userId).Collection("jobs").Doc(jobId).Set(ctx, job)
 	if err != nil {
 		d.Log.Println("DB: Error updating job in Firestore: ", err.Error())
