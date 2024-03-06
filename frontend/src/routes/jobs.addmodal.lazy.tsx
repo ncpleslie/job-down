@@ -1,4 +1,4 @@
-import AddJobForm, { AddJobFormValues } from "@/components/AddJobForm";
+import AddJobForm from "@/components/AddJobForm";
 import {
   Dialog,
   DialogHeader,
@@ -6,25 +6,15 @@ import {
   DialogContent,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useAddJobMutation } from "@/hooks/use-query.hook";
-import { createLazyFileRoute, useRouter } from "@tanstack/react-router";
+import useAddJob from "@/hooks/use-add-job.hook";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/jobs/addmodal")({
   component: AddJobModal,
 });
 
 function AddJobModal() {
-  const { mutate } = useAddJobMutation();
-  const router = useRouter();
-
-  const onSubmit = (values: AddJobFormValues) => {
-    mutate(values);
-    router.history.back();
-  };
-
-  const onClose = () => {
-    router.history.back();
-  };
+  const { onClose, onSubmit } = useAddJob();
 
   return (
     <Dialog open={true} onOpenChange={onClose}>

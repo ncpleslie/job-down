@@ -65,3 +65,17 @@ func (s *Storage) GetDownloadURL(ctx context.Context, filename string) (string, 
 
 	return attrs.MediaLink, nil
 }
+
+func (s *Storage) DeleteFile(ctx context.Context, filename string) error {
+	bucket, err := s.Client.DefaultBucket()
+	if err != nil {
+		return err
+	}
+
+	obj := bucket.Object(filename)
+	if err := obj.Delete(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}

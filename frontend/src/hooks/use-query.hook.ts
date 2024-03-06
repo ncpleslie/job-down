@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpStatusToText } from "../lib/utils/http-status-to-text.util";
-import JobResponse, { JobResponseJson } from "../models/responses/job.response";
+import JobResponse from "../models/responses/job.response";
 import JobsResponse, {
   JobsResponseJson,
 } from "@/models/responses/jobs.response";
@@ -41,7 +41,7 @@ export const useGetJobsQuery = () => {
       }
       const jobs = (await response.json()) as JobsResponseJson;
 
-      return new JobsResponse(jobs);
+      return new JobsResponse(jobs).jobs;
     },
   });
 };
@@ -98,10 +98,9 @@ export const useAddJobMutation = () => {
         }
 
         const chunkString = new TextDecoder().decode(value);
-        queryClient.setQueryData(
-          ["createJob"],
-          () => new JobResponse(JSON.parse(chunkString)),
-        );
+        const job = new JobResponse(JSON.parse(chunkString));
+        queryClient.setQueryData(["createJob"], () => job);
+        queryClient.setQueryData(["getJobById", job.id], () => job);
         queryClient.invalidateQueries({ queryKey: ["getJobs"] });
         queryClient.refetchQueries({ queryKey: ["getJobs"] });
 
@@ -128,7 +127,7 @@ export const useUpdateJobMutation = () => {
       status: string;
     }) => {
       const response = await fetch(`/api/job/test1/${request.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -142,10 +141,12 @@ export const useUpdateJobMutation = () => {
 
       return new JobResponse(await response.json());
     },
-    onSuccess: () => {
+    onSuccess: (job) => {
       queryClient.invalidateQueries({
         queryKey: ["getJobs", "getJobById"],
       });
+      queryClient.setQueryData(["getJobById", job.id], () => job);
+      queryClient.refetchQueries({ queryKey: ["getJobs"] });
     },
   });
 };
@@ -167,8 +168,12 @@ export const useDeleteJobMutation = () => {
         );
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getJobs", "getJobById"] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["getJobs", "getJobById"],
+      });
+      queryClient.setQueryData(["getJobById", variables], () => null);
+      queryClient.refetchQueries({ queryKey: ["getJobs"] });
     },
   });
 };

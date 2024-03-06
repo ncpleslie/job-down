@@ -19,7 +19,7 @@ func addRoutes(
 	mux.Handle("GET /job/{userId}", handleAllJobsGet(jobService))
 	mux.Handle("GET /job/{userId}/{jobId}", handleJobGet(jobService))
 	mux.Handle("POST /job/{userId}", handleJobPost(jobService))
-	mux.Handle("PATCH /job/{userId}/jobId", handleJobPatch(jobService))
+	mux.Handle("PATCH /job/{userId}/{jobId}", handleJobPatch(jobService))
 	mux.Handle("DELETE /job/{userId}/{jobId}", handleJobDelete(jobService))
 	mux.Handle("GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -112,7 +112,7 @@ func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
 
 		updateJob, updateErr := jobService.UpdateJob(r.Context(), userId, jobId, job)
 		if updateErr != nil {
-			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error updating job. Error: %s", err.Error())})
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error updating job. Error: %s", updateErr.Error())})
 		}
 
 		encode(w, r, http.StatusOK, updateJob)

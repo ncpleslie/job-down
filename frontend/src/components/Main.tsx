@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import AllJobsTable from "./AllJobs";
+import AllJobsTable from "./AllJobsTable";
 
 const Main: React.FC = () => {
   const [addNewJobDialogOpen, setAddNewJobDialogOpen] = useState(false);

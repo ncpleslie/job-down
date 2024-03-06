@@ -16,21 +16,25 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./input";
 import { DataTableViewOptions } from "./data-table-view-options";
+import { Button } from "./button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowDeleteRequested?: (rowSelection: TData[]) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onRowDeleteRequested,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -40,11 +44,20 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
+
+  const onDeleteRow = () => {
+    const selectedRows = table
+      .getFilteredSelectedRowModel()
+      .rows.map((rowSelection) => rowSelection.original);
+    onRowDeleteRequested?.(selectedRows);
+  };
 
   return (
     <div className="w-full">
@@ -57,7 +70,12 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <div className="ml-auto">
+        <div className="ml-auto flex flex-row items-center gap-8">
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button variant="destructive" onClick={onDeleteRow}>
+              Delete Selected
+            </Button>
+          )}
           <DataTableViewOptions table={table} />
         </div>
       </div>
@@ -110,6 +128,10 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex-1 py-8 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected
       </div>
     </div>
   );

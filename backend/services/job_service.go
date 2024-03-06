@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/google/uuid"
 	"github.com/ncpleslie/application-tracker/clients/db"
 	store "github.com/ncpleslie/application-tracker/clients/storage"
 	web "github.com/ncpleslie/application-tracker/clients/web_renderer"
@@ -83,7 +82,7 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 			return
 		}
 
-		filename := fmt.Sprintf("%s/%s.png", userId, uuid.New().String())
+		filename := fmt.Sprintf("%s/%s.png", userId, jobEntity.Id)
 		downloadUrl, err := s.Storage.UploadFile(ctx, filename, b)
 		if err != nil {
 			errChan <- err
@@ -126,5 +125,7 @@ func (s *JobService) UpdateJob(ctx context.Context, userId string, jobId string,
 }
 
 func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string) error {
+	s.Storage.DeleteFile(ctx, fmt.Sprintf("%s/%s.png", userId, jobId))
+
 	return s.DB.DeleteJob(ctx, userId, jobId)
 }

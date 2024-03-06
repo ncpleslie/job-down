@@ -1,27 +1,21 @@
-import AddJobForm, { AddJobFormValues } from "@/components/AddJobForm";
-import { useAddJobMutation } from "@/hooks/use-query.hook";
-import { createLazyFileRoute, useRouter } from "@tanstack/react-router";
+import AddJobForm from "@/components/AddJobForm";
+import { Card } from "@/components/ui/card";
+import useAddJob from "@/hooks/use-add-job.hook";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/jobs/add")({
   component: AddJob,
 });
 
 function AddJob() {
-  const { mutate } = useAddJobMutation();
-  const router = useRouter();
-
-  const onSubmit = (values: AddJobFormValues) => {
-    mutate(values);
-    router.history.back();
-  };
-
-  const onClose = () => {
-    router.history.back();
-  };
+  const { onClose, onSubmit } = useAddJob();
 
   return (
-    <div>
-      <AddJobForm onSubmit={onSubmit} onCancel={onClose} />
+    <div className="flex items-center justify-center">
+      <Card className="p-8">
+        <h2 className="text-center text-xl">Add a new job</h2>
+        <AddJobForm onSubmit={onSubmit} onCancel={onClose} />
+      </Card>
     </div>
   );
 }

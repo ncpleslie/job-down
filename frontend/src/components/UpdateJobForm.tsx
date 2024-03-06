@@ -11,13 +11,22 @@ import {
   FormDescription,
   FormMessage,
 } from "./ui/form";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Input } from "./ui/input";
 import RequiredText from "./ui/required-text";
+import JobResponse from "@/models/responses/job.response";
+import { useState } from "react";
 
-export type AddJobFormValues = z.infer<typeof formSchema>;
+export type UpdateJobFormValues = z.infer<typeof formSchema>;
 
-type AddJobFormProps = {
-  onSubmit: (values: AddJobFormValues) => void;
+type UpdateJobFormProps = {
+  job: JobResponse;
+  onSubmit: (values: UpdateJobFormValues) => void;
   onCancel: () => void;
 };
 
@@ -36,15 +45,22 @@ const formSchema = z.object({
   }),
 });
 
-const AddJobForm: React.FC<AddJobFormProps> = ({ onSubmit, onCancel }) => {
+const UpdateJobForm: React.FC<UpdateJobFormProps> = ({
+  job,
+  onSubmit,
+  onCancel,
+}) => {
+  const [editMode, setEditMode] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      position: "",
-      company: "",
-      url: "",
-      status: "Applied",
+      position: job.position,
+      company: job.company,
+      url: job.url,
+      status: job.status,
     },
+    disabled: !editMode,
   });
 
   return (
@@ -125,10 +141,40 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSubmit, onCancel }) => {
               </FormItem>
             )}
           />
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger disabled={!job.imageUrl}>
+                Application Page {!job.imageUrl && "Is Processing..."}
+              </AccordionTrigger>
+              <AccordionContent>
+                {job.imageUrl && (
+                  <img
+                    src={job.imageUrl}
+                    loading="lazy"
+                    alt={`Job description for ${job.position} at ${job.company}`}
+                  />
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           <div className="flex w-full sm:justify-start md:justify-between">
-            <Button type="submit">Add</Button>
-            <Button type="button" variant="secondary" onClick={onCancel}>
-              Cancel
+            {editMode && <Button type="submit">Update</Button>}
+            {!editMode && (
+              <Button
+                variant="destructive"
+                className="mr-auto"
+                onClick={() => setEditMode(true)}
+              >
+                Edit
+              </Button>
+            )}
+            <Button
+              type="button"
+              className="ml-auto"
+              variant="secondary"
+              onClick={onCancel}
+            >
+              Close
             </Button>
           </div>
         </form>
@@ -137,4 +183,4 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSubmit, onCancel }) => {
   );
 };
 
-export default AddJobForm;
+export default UpdateJobForm;

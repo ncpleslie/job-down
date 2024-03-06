@@ -43,7 +43,7 @@ export const Route = createRootRoute({
             </Link>
           </Button>
         </nav>
-        <hr />
+        <hr className="mb-8" />
         <Outlet />
       </>
     );

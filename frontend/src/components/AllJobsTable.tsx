@@ -11,9 +11,32 @@ import {
 import { DataTable } from "./ui/data-table";
 import JobResponse from "@/models/responses/job.response";
 import { Link } from "@tanstack/react-router";
-import { PropsWithChildren } from "react";
+import { dateStringToTimeAndDate } from "@/utils/date-format.utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const columns: ColumnDef<JobResponse>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "company",
     header: ({ column }) => {
@@ -26,9 +49,7 @@ const columns: ColumnDef<JobResponse>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("company")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("company")}</div>,
   },
   {
     accessorKey: "position",
@@ -60,8 +81,7 @@ const columns: ColumnDef<JobResponse>[] = [
     },
     cell: ({ row }) => (
       <div className="capitalize">
-        {new Date(row.getValue("createdAt")).toLocaleTimeString()} -{" "}
-        {new Date(row.getValue("createdAt")).toLocaleDateString()}
+        {dateStringToTimeAndDate(row.getValue("createdAt") as string)}
       </div>
     ),
   },
@@ -98,10 +118,11 @@ const columns: ColumnDef<JobResponse>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>
               <Link to="/jobs/$jobId" params={{ jobId: job.id }}>
-                View
+                View and Edit
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -111,10 +132,17 @@ const columns: ColumnDef<JobResponse>[] = [
 
 type AllJobsTableProps = {
   jobs: JobResponse[];
+  onDeleteJobs: (jobs: JobResponse[]) => void;
 };
 
-const AllJobsTable: React.FC<AllJobsTableProps> = ({ jobs }) => {
-  return <DataTable data={jobs} columns={columns} />;
+const AllJobsTable: React.FC<AllJobsTableProps> = ({ jobs, onDeleteJobs }) => {
+  return (
+    <DataTable
+      data={jobs}
+      columns={columns}
+      onRowDeleteRequested={onDeleteJobs}
+    />
+  );
 };
 
 export default AllJobsTable;

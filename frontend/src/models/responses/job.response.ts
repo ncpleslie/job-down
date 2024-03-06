@@ -5,10 +5,10 @@ export type JobResponseJson = {
   position: string;
   company: string;
   url: string;
-  image_filename: string;
-  image_url: string;
+  image_filename?: string;
+  image_url?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   status: string;
 };
 
@@ -30,9 +30,9 @@ export default class JobResponse extends BaseResponse {
   public position: string;
   public company: string;
   public url: string;
-  public imageFilename: string;
-  public imageUrl: string;
+  public imageFilename?: string;
+  public imageUrl?: string;
   public createdAt: string;
-  public updatedAt: string;
+  public updatedAt?: string;
   public status: string;
 }
