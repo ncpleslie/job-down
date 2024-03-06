@@ -58,7 +58,7 @@ const LoadingDialog: React.FC<React.PropsWithChildren<LoadingDialogProps>> = ({
   children,
 }) => {
   return (
-    <Dialog open={!isLoading}>
+    <Dialog open={isLoading}>
       <DialogContent className="w-32">
         <DialogHeader>
           <DialogTitle>{children}</DialogTitle>

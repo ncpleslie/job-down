@@ -5,6 +5,7 @@ import {
   Outlet,
   useRouterState,
 } from "@tanstack/react-router";
+import { PlusSquare } from "lucide-react";
 
 export const Route = createRootRoute({
   component: () => {
@@ -33,13 +34,13 @@ export const Route = createRootRoute({
             <Link
               to={
                 router.location.pathname === "/jobs"
-                  ? "/jobs/addmodal"
+                  ? "/jobs/add/modal"
                   : "/jobs/add"
               }
-              mask={{ to: "/jobs/add" }}
               className="[&.active]:font-bold"
             >
-              Add New Job
+              <PlusSquare className="mr-2 h-4 w-4" />
+              New Job
             </Link>
           </Button>
         </nav>

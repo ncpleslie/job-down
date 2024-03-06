@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "./input";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { Button } from "./button";

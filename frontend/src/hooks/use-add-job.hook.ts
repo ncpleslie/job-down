@@ -1,4 +1,4 @@
-import { AddJobFormValues } from "@/components/AddJobForm";
+import { AddJobFormValues } from "@/components/JobForm";
 import { useAddJobMutation, useCreateJobQuery } from "./use-query.hook";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";

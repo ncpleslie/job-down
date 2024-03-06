@@ -9,6 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -21,7 +22,7 @@ export function DataTableViewOptions<TData>({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="hidden lg:flex">
-          View
+          Columns <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">

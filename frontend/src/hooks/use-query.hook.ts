@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { httpStatusToText } from "../lib/utils/http-status-to-text.util";
 import JobResponse from "../models/responses/job.response";
 import JobsResponse, {
@@ -29,8 +34,8 @@ export const useGetJobByIdQuery = (jobId: string) => {
 /**
  * A hook to get all jobs.
  */
-export const useGetJobsQuery = () => {
-  return useQuery({
+export const useGetJobsSuspenseQuery = () => {
+  return useSuspenseQuery({
     queryKey: ["getJobs"],
     queryFn: async () => {
       const response = await fetch("/api/job/test1");

@@ -1,5 +1,3 @@
-import BaseResponse from "./base.response";
-
 export type JobResponseJson = {
   id: string;
   position: string;
@@ -12,9 +10,8 @@ export type JobResponseJson = {
   status: string;
 };
 
-export default class JobResponse extends BaseResponse {
+export default class JobResponse {
   constructor(data: JobResponseJson) {
-    super();
     this.id = data.id;
     this.position = data.position;
     this.company = data.company;

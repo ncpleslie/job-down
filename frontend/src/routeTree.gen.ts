@@ -19,8 +19,9 @@ import { Route as IndexImport } from './routes/index'
 
 const JobsLazyImport = createFileRoute('/jobs')()
 const JobsAddLazyImport = createFileRoute('/jobs/add')()
-const JobsAddmodalLazyImport = createFileRoute('/jobs/addmodal')()
 const JobsJobIdLazyImport = createFileRoute('/jobs/$jobId')()
+const JobsAddModalLazyImport = createFileRoute('/jobs/add/modal')()
+const JobsJobIdModalLazyImport = createFileRoute('/jobs/$jobId/modal')()
 
 // Create/Update Routes
 
@@ -39,15 +40,24 @@ const JobsAddLazyRoute = JobsAddLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/jobs_.add.lazy').then((d) => d.Route))
 
-const JobsAddmodalLazyRoute = JobsAddmodalLazyImport.update({
-  path: '/addmodal',
-  getParentRoute: () => JobsLazyRoute,
-} as any).lazy(() => import('./routes/jobs.addmodal.lazy').then((d) => d.Route))
-
 const JobsJobIdLazyRoute = JobsJobIdLazyImport.update({
-  path: '/$jobId',
+  path: '/jobs/$jobId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/jobs_.$jobId.lazy').then((d) => d.Route))
+
+const JobsAddModalLazyRoute = JobsAddModalLazyImport.update({
+  path: '/add/modal',
   getParentRoute: () => JobsLazyRoute,
-} as any).lazy(() => import('./routes/jobs.$jobId.lazy').then((d) => d.Route))
+} as any).lazy(() =>
+  import('./routes/jobs.add.modal.lazy').then((d) => d.Route),
+)
+
+const JobsJobIdModalLazyRoute = JobsJobIdModalLazyImport.update({
+  path: '/$jobId/modal',
+  getParentRoute: () => JobsLazyRoute,
+} as any).lazy(() =>
+  import('./routes/jobs.$jobId.modal.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -63,15 +73,19 @@ declare module '@tanstack/react-router' {
     }
     '/jobs/$jobId': {
       preLoaderRoute: typeof JobsJobIdLazyImport
-      parentRoute: typeof JobsLazyImport
-    }
-    '/jobs/addmodal': {
-      preLoaderRoute: typeof JobsAddmodalLazyImport
-      parentRoute: typeof JobsLazyImport
+      parentRoute: typeof rootRoute
     }
     '/jobs/add': {
       preLoaderRoute: typeof JobsAddLazyImport
       parentRoute: typeof rootRoute
+    }
+    '/jobs/$jobId/modal': {
+      preLoaderRoute: typeof JobsJobIdModalLazyImport
+      parentRoute: typeof JobsLazyImport
+    }
+    '/jobs/add/modal': {
+      preLoaderRoute: typeof JobsAddModalLazyImport
+      parentRoute: typeof JobsLazyImport
     }
   }
 }
@@ -80,7 +94,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  JobsLazyRoute.addChildren([JobsJobIdLazyRoute, JobsAddmodalLazyRoute]),
+  JobsLazyRoute.addChildren([JobsJobIdModalLazyRoute, JobsAddModalLazyRoute]),
+  JobsJobIdLazyRoute,
   JobsAddLazyRoute,
 ])
 

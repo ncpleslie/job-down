@@ -1,13 +1,10 @@
-import BaseRequest from "./base.request";
-
-export default class JobRequest extends BaseRequest {
+export default class JobRequest {
   constructor(data: {
     position: string;
     company: string;
     url: string;
     status: string;
   }) {
-    super();
     this.position = data.position;
     this.company = data.company;
     this.url = data.url;

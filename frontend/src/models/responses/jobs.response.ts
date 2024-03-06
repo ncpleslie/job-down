@@ -1,14 +1,12 @@
-import BaseResponse from "./base.response";
 import JobResponse, { JobResponseJson } from "./job.response";
 
 export type JobsResponseJson = {
-  jobs: JobResponseJson[];
+  jobs?: JobResponseJson[];
 };
 
-export default class JobsResponse extends BaseResponse {
+export default class JobsResponse {
   constructor(data: JobsResponseJson) {
-    super();
-    this.jobs = data.jobs.map((job) => new JobResponse(job));
+    this.jobs = data.jobs?.map((job) => new JobResponse(job)) ?? [];
   }
 
   public jobs: JobResponse[];
