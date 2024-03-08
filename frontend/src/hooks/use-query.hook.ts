@@ -9,16 +9,26 @@ import JobResponse from "../models/responses/job.response";
 import JobsResponse, {
   JobsResponseJson,
 } from "@/models/responses/jobs.response";
+import { auth } from "@/constants/firebase";
+import { useIdToken } from "react-firebase-hooks/auth";
 
 /**
  * A hook to get a job by its ID.
  * @param jobId - The job's id.
  */
 export const useGetJobByIdQuery = (jobId: string) => {
+  const [user] = useIdToken(auth);
+
   return useQuery({
     queryKey: ["getJobById", jobId],
     queryFn: async () => {
-      const response = await fetch(`/api/job/test1/${jobId}`);
+      const token = await user?.getIdToken();
+
+      const response = await fetch(`/api/job/${jobId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),
@@ -27,7 +37,7 @@ export const useGetJobByIdQuery = (jobId: string) => {
 
       return new JobResponse(await response.json());
     },
-    enabled: Boolean(jobId),
+    enabled: Boolean(jobId) && Boolean(user),
   });
 };
 
@@ -35,10 +45,18 @@ export const useGetJobByIdQuery = (jobId: string) => {
  * A hook to get all jobs.
  */
 export const useGetJobsSuspenseQuery = () => {
+  const [user] = useIdToken(auth);
+
   return useSuspenseQuery({
     queryKey: ["getJobs"],
     queryFn: async () => {
-      const response = await fetch("/api/job/test1");
+      const token = await user?.getIdToken();
+
+      const response = await fetch("/api/jobs", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),
@@ -71,6 +89,8 @@ export const useCreateJobQuery = () => {
  */
 export const useAddJobMutation = () => {
   const queryClient = useQueryClient();
+  const [user] = useIdToken(auth);
+
   return useMutation({
     mutationFn: async (request: {
       position: string;
@@ -78,13 +98,18 @@ export const useAddJobMutation = () => {
       url: string;
       status: string;
     }) => {
-      const response = await fetch("/api/job/test1", {
+      const token = await user?.getIdToken();
+
+      const response = await fetch("/api/job", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(request),
       });
+
+      console.log("response", response);
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),
@@ -122,6 +147,7 @@ export const useAddJobMutation = () => {
  */
 export const useUpdateJobMutation = () => {
   const queryClient = useQueryClient();
+  const [user] = useIdToken(auth);
 
   return useMutation({
     mutationFn: async (request: {
@@ -131,10 +157,13 @@ export const useUpdateJobMutation = () => {
       url: string;
       status: string;
     }) => {
-      const response = await fetch(`/api/job/test1/${request.id}`, {
+      const token = await user?.getIdToken();
+
+      const response = await fetch(`/api/job/${request.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(request),
       });
@@ -161,11 +190,17 @@ export const useUpdateJobMutation = () => {
  */
 export const useDeleteJobMutation = () => {
   const queryClient = useQueryClient();
+  const [user] = useIdToken(auth);
 
   return useMutation({
     mutationFn: async (jobId: string) => {
-      const response = await fetch(`/api/job/test1/${jobId}`, {
+      const token = await user?.getIdToken();
+
+      const response = await fetch(`/api/job/${jobId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error(

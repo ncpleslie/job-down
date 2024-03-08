@@ -5,6 +5,8 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { auth } from "@/constants/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const jobModalToJobMask = createRouteMask({
   routeTree,
@@ -24,12 +26,19 @@ const addJobModalToAddJobMask = createRouteMask({
 const router = createRouter({
   routeTree,
   routeMasks: [jobModalToJobMask, addJobModalToAddJobMask],
+  context: { auth: undefined },
 });
 
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
+}
+
+function InnerApp() {
+  const [user] = useAuthState(auth);
+
+  return <RouterProvider router={router} context={{ auth: user }} />;
 }
 
 function App() {
@@ -43,9 +52,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <main className="container mx-auto min-h-screen">
-        <RouterProvider router={router} />
-      </main>
+      <InnerApp />
     </QueryClientProvider>
   );
 }

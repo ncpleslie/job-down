@@ -26,7 +26,10 @@ func main() {
 	db := db.NewClient(app, log)
 	defer db.Client.Close()
 
-	srv := server.NewServer(services.NewJobService(renderer, storage, db, log))
+	authService := services.NewAuthService(app, log)
+	jobService := services.NewJobService(renderer, storage, db, log)
+
+	srv := server.NewServer(authService, jobService)
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(config.Server.Host, config.Server.Port),
 		Handler: srv,

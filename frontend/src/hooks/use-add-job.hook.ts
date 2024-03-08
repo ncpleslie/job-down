@@ -1,4 +1,4 @@
-import { AddJobFormValues } from "@/components/JobForm";
+import { JobFormValues } from "@/components/JobForm";
 import { useAddJobMutation, useCreateJobQuery } from "./use-query.hook";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -19,7 +19,7 @@ const useAddJob = () => {
     }
   }, [data]);
 
-  const onSubmit = (values: AddJobFormValues) => {
+  const onSubmit = (values: JobFormValues) => {
     mutate(values);
   };
 
