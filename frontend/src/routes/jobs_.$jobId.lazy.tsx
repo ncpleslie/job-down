@@ -1,13 +1,12 @@
+import ImageViewer from "@/components/ImageViewer";
 import JobForm, { JobFormValues } from "@/components/JobForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LoadingDialog } from "@/components/ui/loading-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   useGetJobByIdQuery,
   useUpdateJobMutation,
 } from "@/hooks/use-query.hook";
-import { dateStringToTimeAndDate } from "@/utils/date-format.utils";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -31,28 +30,17 @@ function Job() {
         <Card className="p-8">
           {job && (
             <>
-              <div className="flex flex-row justify-between gap-4">
+              <div className="flex flex-row flex-wrap justify-between gap-4">
                 <div className="flex flex-col gap-2">
                   <h2 className="text-center text-xl">
                     {job?.position} @ {job?.company}
                   </h2>
-                  <p className="text-center">
-                    Applied on {dateStringToTimeAndDate(job?.createdAt)}
-                  </p>
+                  <p className="text-center">Applied on {job?.createdAt}</p>
                 </div>
-                {!job.imageUrl && (
-                  <Skeleton className="flex aspect-video w-[384px] items-center justify-center rounded-xl">
-                    Processing Image
-                  </Skeleton>
-                )}
-                {job.imageUrl && (
-                  <img
-                    src={job.imageUrl}
-                    loading="lazy"
-                    alt={`Job description for ${job.position} at ${job.company}`}
-                    className="flex aspect-video w-[384px] rounded-xl"
-                  />
-                )}
+                <ImageViewer
+                  src={job.imageUrl}
+                  alt={`Job description for ${job.position} at ${job.company}`}
+                />
               </div>
               <div className="flex items-center space-x-2">
                 <JobForm.JobForm

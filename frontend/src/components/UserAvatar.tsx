@@ -7,14 +7,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { auth } from "@/constants/firebase";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import LoadingSpinner from "./ui/loading-spinner";
+import { User } from "firebase/auth";
 
-const UserAvatar = () => {
-  const [user, loading] = useAuthState(auth);
-  const [signOut] = useSignOut(auth);
+interface UserAvatarProps {
+  user: User | null;
+  loading: boolean;
+  signOut: () => void;
+}
 
+const UserAvatar: React.FC<UserAvatarProps> = ({ user, loading, signOut }) => {
   const initials = user?.displayName
     ?.split(" ")
     .map((name) => name[0])

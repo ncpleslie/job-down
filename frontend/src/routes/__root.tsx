@@ -6,15 +6,23 @@ import {
   createRootRoute,
   Link,
   Outlet,
+  useNavigate,
   useRouterState,
 } from "@tanstack/react-router";
 import { PlusSquare } from "lucide-react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 
 export const Route = createRootRoute({
   component: () => {
     const router = useRouterState();
+    const navigate = useNavigate();
     const [user, loading, error] = useAuthState(auth);
+    const [signOut] = useSignOut(auth);
+
+    const onSignOut = () => {
+      signOut();
+      navigate({ to: "/" });
+    };
 
     if (loading) {
       return <LoadingDialog isLoading={true}>Authenticating</LoadingDialog>;
@@ -64,7 +72,11 @@ export const Route = createRootRoute({
                       New Job
                     </Link>
                   </Button>
-                  <UserAvatar />
+                  <UserAvatar
+                    user={user}
+                    loading={loading}
+                    signOut={onSignOut}
+                  />
                 </div>
               </nav>
               <hr className="mb-8" />

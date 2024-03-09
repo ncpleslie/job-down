@@ -13,7 +13,6 @@ type Job struct {
 	Company       string
 	Url           string
 	ImageFilename string
-	ImageUrl      string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Status        string
@@ -35,7 +34,6 @@ func (job Job) ToResponse() responses.Job {
 		Company:       job.Company,
 		Url:           job.Url,
 		ImageFilename: job.ImageFilename,
-		ImageUrl:      job.ImageUrl,
 		CreatedAt:     job.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:     job.UpdatedAt.Format(time.RFC3339),
 		Status:        job.Status,

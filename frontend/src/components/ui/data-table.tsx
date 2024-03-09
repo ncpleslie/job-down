@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  RowData,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -20,17 +21,26 @@ import { useState } from "react";
 import { Input } from "./input";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { Button } from "./button";
+import { cn } from "@/lib/utils";
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    className?: string;
+  }
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowDeleteRequested?: (rowSelection: TData[]) => void;
+  disabledKey?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   onRowDeleteRequested,
+  disabledKey,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -86,7 +96,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={cn(header.column.columnDef.meta?.className)}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -105,9 +118,13 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={`${(row.getValue("status") as string).trim().toLowerCase() === disabledKey && "bg-gray-200 opacity-30 transition-opacity duration-300 hover:opacity-100"}`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(cell.column.columnDef.meta?.className)}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

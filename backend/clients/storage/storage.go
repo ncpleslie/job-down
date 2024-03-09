@@ -3,7 +3,9 @@ package storage
 import (
 	"context"
 	"log"
+	"time"
 
+	cStorage "cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	storage "firebase.google.com/go/v4/storage"
 )
@@ -42,28 +44,27 @@ func (s *Storage) UploadFile(ctx context.Context, filename string, data []byte) 
 		return "", err
 	}
 
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	return attrs.MediaLink, nil
-
+	return s.GetDownloadURL(ctx, filename)
 }
 
 func (s *Storage) GetDownloadURL(ctx context.Context, filename string) (string, error) {
+
 	bucket, err := s.Client.DefaultBucket()
 	if err != nil {
 		return "", err
 	}
 
 	obj := bucket.Object(filename)
-	attrs, err := obj.Attrs(ctx)
+
+	url, err := bucket.SignedURL(obj.ObjectName(), &cStorage.SignedURLOptions{
+		Expires: time.Now().Add(30 * time.Minute),
+		Method:  "GET",
+	})
 	if err != nil {
 		return "", err
 	}
 
-	return attrs.MediaLink, nil
+	return url, nil
 }
 
 func (s *Storage) DeleteFile(ctx context.Context, filename string) error {

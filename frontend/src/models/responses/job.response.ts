@@ -18,8 +18,10 @@ export default class JobResponse {
     this.url = data.url;
     this.imageFilename = data.image_filename;
     this.imageUrl = data.image_url;
-    this.createdAt = data.created_at;
-    this.updatedAt = data.updated_at;
+    this.createdAt = this.dateStringToTimeAndDate(data.created_at);
+    this.updatedAt = data.updated_at
+      ? this.dateStringToTimeAndDate(data.updated_at)
+      : undefined;
     this.status = data.status;
   }
 
@@ -32,4 +34,9 @@ export default class JobResponse {
   public createdAt: string;
   public updatedAt?: string;
   public status: string;
+
+  private dateStringToTimeAndDate(date: string) {
+    const dateObj = new Date(date);
+    return `${dateObj.toLocaleTimeString()} - ${dateObj.toLocaleDateString()}`;
+  }
 }

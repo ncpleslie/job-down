@@ -11,7 +11,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { LoadingDialog } from "@/components/ui/loading-dialog";
-import { dateStringToTimeAndDate } from "@/utils/date-format.utils";
 import JobForm, { JobFormValues } from "@/components/JobForm";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,8 +20,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ImageViewer from "@/components/ImageViewer";
 
 export const Route = createLazyFileRoute("/jobs/$jobId/modal")({
   component: JobModal,
@@ -53,12 +52,12 @@ function JobModal() {
       <Dialog open={true} onOpenChange={onClose}>
         {job && (
           <DialogContent className="max-h-[100vh] md:max-h-[90vh] md:rounded-md">
-            <DialogHeader className="mt-6 flex items-center justify-center border-b-2 pb-4">
+            <DialogHeader className="mt-6 flex items-center justify-center border-b-2 px-8 pb-4">
               <DialogTitle>
                 {job?.position} @ {job?.company}
               </DialogTitle>
               <DialogDescription className="max-w-md">
-                Applied on {dateStringToTimeAndDate(job?.createdAt)}
+                Applied on {job?.createdAt}
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[90vh] md:max-h-[75vh]">
@@ -74,20 +73,11 @@ function JobModal() {
                         <AccordionTrigger disabled={!job.imageUrl}>
                           Application Page {!job.imageUrl && "Is Processing..."}
                         </AccordionTrigger>
-                        <AccordionContent>
-                          {!job.imageUrl && (
-                            <Skeleton className="flex aspect-video w-[384px] items-center justify-center rounded-xl">
-                              Processing Image
-                            </Skeleton>
-                          )}
-                          {job.imageUrl && (
-                            <img
-                              src={job.imageUrl}
-                              loading="lazy"
-                              alt={`Job description for ${job.position} at ${job.company}`}
-                              className="flex aspect-video w-[384px] rounded-xl"
-                            />
-                          )}
+                        <AccordionContent className="flex justify-center">
+                          <ImageViewer
+                            src={job.imageUrl}
+                            alt={`Job description for ${job.position} at ${job.company}`}
+                          />
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>

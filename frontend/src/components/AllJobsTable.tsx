@@ -11,7 +11,6 @@ import {
 import { DataTable } from "./ui/data-table";
 import JobResponse from "@/models/responses/job.response";
 import { Link } from "@tanstack/react-router";
-import { dateStringToTimeAndDate } from "@/utils/date-format.utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   useDeleteJobMutation,
@@ -20,6 +19,8 @@ import {
 import { LoadingDialog } from "./ui/loading-dialog";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useMemo } from "react";
+import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
+import AppConstants from "@/constants/app.constants";
 
 const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
   const columns: ColumnDef<JobResponse>[] = [
@@ -44,6 +45,9 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
       ),
       enableSorting: false,
       enableHiding: false,
+      meta: {
+        className: "hidden lg:table-cell",
+      },
     },
     {
       accessorKey: "company",
@@ -51,16 +55,18 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         return (
           <Button
             variant="ghost"
-            className="w-full"
+            className="w-full max-w-[200px] flex-row flex-nowrap items-center text-xs md:max-w-full lg:flex lg:text-sm"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Company
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-2 hidden h-4 w-4 md:block" />
           </Button>
         );
       },
       cell: ({ row }) => (
-        <div className="text-center">{row.getValue("company")}</div>
+        <div className="max-w-[19ch] truncate text-ellipsis text-left text-xs md:max-w-full md:text-center lg:text-sm">
+          {row.getValue("company")}
+        </div>
       ),
     },
     {
@@ -69,16 +75,23 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         return (
           <Button
             variant="ghost"
-            className="w-full"
+            className="w-full max-w-[100px] flex-row flex-nowrap text-xs md:max-w-full lg:flex lg:text-sm"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Title / Position
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-2 hidden h-4 w-4 md:block" />
           </Button>
         );
       },
       cell: ({ row }) => {
-        return <div className="text-center">{row.getValue("position")}</div>;
+        return (
+          <div className="max-w-[25ch] text-left text-xs md:max-w-full md:text-center lg:text-sm">
+            {row.getValue("position")}
+          </div>
+        );
+      },
+      meta: {
+        className: "p-2 md:p-4",
       },
     },
     {
@@ -87,7 +100,7 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         return (
           <Button
             variant="ghost"
-            className="w-full"
+            className="flex w-full flex-row flex-nowrap"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Applied Date
@@ -97,9 +110,12 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
       },
       cell: ({ row }) => (
         <div className="text-center capitalize">
-          {dateStringToTimeAndDate(row.getValue("createdAt") as string)}
+          {row.getValue("createdAt")}
         </div>
       ),
+      meta: {
+        className: "hidden lg:table-cell",
+      },
     },
     {
       accessorKey: "status",
@@ -107,7 +123,7 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         return (
           <Button
             variant="ghost"
-            className="w-full"
+            className="flex w-full flex-row flex-nowrap"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Status
@@ -116,8 +132,14 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         );
       },
       cell: ({ row }) => (
-        <div className="text-center capitalize">{row.getValue("status")}</div>
+        <div className="text-center capitalize">
+          {snakeCaseToTitleCase(row.getValue("status"))}
+        </div>
       ),
+      meta: {
+        className: "hidden lg:table-cell",
+      },
+      sortingFn: "alphanumeric",
     },
     {
       id: "actions",
@@ -128,7 +150,7 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-full p-0">
+              <Button variant="ghost" className="h-8 w-4 p-0 md:w-full">
                 <span className="sr-only">More</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -147,6 +169,9 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
             </DropdownMenuContent>
           </DropdownMenu>
         );
+      },
+      meta: {
+        className: "p-2 md:p-4",
       },
     },
   ];
@@ -177,6 +202,7 @@ const AllJobsTable: React.FC = () => {
           data={jobs}
           columns={columns}
           onRowDeleteRequested={onDeleteJobs}
+          disabledKey={AppConstants.DisabledJobStatuses}
         />
       ) : null}
       <LoadingDialog isLoading={isPendingDelete}>Deleting</LoadingDialog>

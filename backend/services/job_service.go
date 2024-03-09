@@ -36,7 +36,13 @@ func (s *JobService) GetJob(ctx context.Context, userId string, jobId string) (r
 		return responses.Job{}, err
 	}
 
-	return job.ToResponse(), nil
+	jobResponse := job.ToResponse()
+	jobResponse.ImageUrl, err = s.Storage.GetDownloadURL(ctx, job.ImageFilename)
+	if err != nil {
+		return responses.Job{}, err
+	}
+
+	return jobResponse, nil
 }
 
 func (s *JobService) GetJobs(ctx context.Context, userId string) ([]responses.Job, error) {
@@ -48,6 +54,11 @@ func (s *JobService) GetJobs(ctx context.Context, userId string) ([]responses.Jo
 	// Convert job entities to job responses
 	var jobResponses []responses.Job
 	for _, job := range jobs {
+		jobR := job.ToResponse()
+		jobR.ImageUrl, err = s.Storage.GetDownloadURL(ctx, job.ImageFilename)
+		if err != nil {
+			return nil, err
+		}
 		jobResponses = append(jobResponses, job.ToResponse())
 	}
 
@@ -90,14 +101,16 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 		}
 
 		jobEntity.ImageFilename = filename
-		jobEntity.ImageUrl = downloadUrl
 		updatedJobEntity, err := s.DB.UpdateJob(ctx, userId, jobEntity.Id, jobEntity)
 		if err != nil {
 			errChan <- err
 			return
 		}
 
-		jobChan <- updatedJobEntity.ToResponse()
+		jobResponse := updatedJobEntity.ToResponse()
+		jobResponse.ImageUrl = downloadUrl
+
+		jobChan <- jobResponse
 	}()
 
 	return jobChan, errChan
@@ -121,7 +134,13 @@ func (s *JobService) UpdateJob(ctx context.Context, userId string, jobId string,
 		return responses.Job{}, err
 	}
 
-	return updatedJobEntity.ToResponse(), nil
+	jobResponse := updatedJobEntity.ToResponse()
+	jobResponse.ImageUrl, err = s.Storage.GetDownloadURL(ctx, updatedJobEntity.ImageFilename)
+	if err != nil {
+		return responses.Job{}, err
+	}
+
+	return jobResponse, nil
 }
 
 func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string) error {

@@ -18,9 +18,7 @@ function AddJob() {
         <JobForm.JobForm onSubmit={onSubmit}>
           <JobForm.JobFormFooter>
             <div className="flex w-full sm:justify-start md:justify-between">
-              <Button type="submit" onClick={() => console.log("clik")}>
-                Add
-              </Button>
+              <Button type="submit">Add</Button>
               <Button variant="secondary" type="button" onClick={onClose}>
                 Cancel
               </Button>

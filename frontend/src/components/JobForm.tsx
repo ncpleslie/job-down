@@ -16,6 +16,9 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { PlusSquare } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import AppConstants from "@/constants/app.constants";
+import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
+import { Textarea } from "@/components/ui/textarea";
 
 export type JobFormValues = z.infer<typeof formSchema>;
 
@@ -24,29 +27,6 @@ type JobFormProps = {
   defaultValues?: JobFormValues;
   disabled?: boolean;
 };
-
-const statusOptions = [
-  {
-    id: "applied",
-    label: "Applied",
-  },
-  {
-    id: "phone_screen",
-    label: "Phone Screen",
-  },
-  {
-    id: "first_interview",
-    label: "First Interview",
-  },
-  {
-    id: "second_interview",
-    label: "Second Interview",
-  },
-  {
-    id: "offer",
-    label: "Offer",
-  },
-];
 
 const formSchema = z.object({
   position: z.string().trim().min(1, {
@@ -58,13 +38,10 @@ const formSchema = z.object({
   url: z.string().trim().url({
     message: "Application URL must be a valid URL.",
   }),
+  additionalNotes: z.string().optional(),
   status: z.string().trim().min(1, {
     message: "Status must be at least 1 characters.",
   }),
-
-  // statuses: z.array(z.string()).refine((value) => value.some((item) => item), {
-  //   message: "You have to select at least one item.",
-  // }),
 });
 
 const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
@@ -73,7 +50,9 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
   disabled,
   children,
 }) => {
-  const [statuses, setStatuses] = useState<typeof statusOptions>(statusOptions);
+  const [statuses, setStatuses] = useState<typeof AppConstants.JobStatuses>(
+    AppConstants.JobStatuses,
+  );
   const [newStatus, setNewStatus] = useState<string>("");
   const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
@@ -186,6 +165,23 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
           />
           <FormField
             control={form.control}
+            name="additionalNotes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Additional Notes</FormLabel>
+                <FormDescription>
+                  Important information such as salary, benefits, or other
+                </FormDescription>
+                <FormControl>
+                  <Textarea className="resize-none" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="status"
             render={({ field }) => (
               <FormItem>
@@ -220,8 +216,8 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
                                     id={status.id}
                                   />
                                 </FormControl>
-                                <FormLabel className="font-normal">
-                                  {status.label}
+                                <FormLabel className="font-normal capitalize">
+                                  {snakeCaseToTitleCase(status.label)}
                                 </FormLabel>
                               </FormItem>
                             );
