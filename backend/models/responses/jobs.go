@@ -14,4 +14,5 @@ type Job struct {
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
 	Status        string `json:"status"`
+	Notes         string `json:"additional_notes"`
 }

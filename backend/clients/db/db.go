@@ -16,7 +16,7 @@ type DB struct {
 	Client *firestore.Client
 }
 
-func NewClient(app *firebase.App, log *log.Logger) *DB {
+func Must(app *firebase.App, log *log.Logger) *DB {
 	ctx := context.Background()
 	client, err := app.Firestore(ctx)
 	if err != nil {

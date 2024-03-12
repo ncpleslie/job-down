@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -17,13 +18,14 @@ import (
 
 func main() {
 	log := log.New(os.Stdout, "application-tracker: ", log.LstdFlags|log.Lshortfile)
-	config := cfg.GenerateConfig()
+	config := cfg.MustGenerateConfig()
+	fmt.Println(config)
 	renderer := web.NewRenderer(config.Screenshot, log)
 	defer renderer.Cancel()
 
-	app := firebase.NewApp(config.Firebase, log)
-	storage := storage.NewClient(app, log)
-	db := db.NewClient(app, log)
+	app := firebase.Must(config.Firebase, log)
+	storage := storage.Must(app, log)
+	db := db.Must(app, log)
 	defer db.Client.Close()
 
 	authService := services.NewAuthService(app, log)

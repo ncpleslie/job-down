@@ -5,4 +5,5 @@ type Job struct {
 	Company  string `json:"company"`
 	Url      string `json:"url"`
 	Status   string `json:"status"`
+	Notes    string `json:"additionalNotes"`
 }

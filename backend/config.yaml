@@ -10,5 +10,5 @@ server:
   host: "0.0.0.0"
 firebase:
   storageBucket: "application-tracker-dev.appspot.com"
-  credentialPath: "fb-admin-service-account-key.json"
   projectId: "application-tracker-dev"
+  credentialsBase64: "will be set by environment variable"

@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/caarlos0/env/v10"
+	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,12 +24,12 @@ type Config struct {
 //
 // Fields:
 //   - StorageBucket: The name of the storage bucket.
-//   - CredentialPath: The path to the credentials file.
 //   - ProjectID: The project ID.
+//   - CredentialsBase64: The base64 encoded credentials for the firebase app.
 type FirebaseConfig struct {
-	StorageBucket  string `yaml:"storageBucket"`
-	CredentialPath string `yaml:"credentialPath"`
-	ProjectID      string `yaml:"projectId"`
+	StorageBucket     string `yaml:"storageBucket"`
+	ProjectID         string `yaml:"projectId"`
+	CredentialsBase64 string `yaml:"credentialsBase64" env:"CREDENTIALS_BASE64"`
 }
 
 // ServerConfig represents the configuration settings for the server.
@@ -63,7 +65,7 @@ type ScreenshotConfig struct {
 //   - Config: The configuration settings for the application.
 //
 // Note: The function panics if there is an error loading the .yml file.
-func GenerateConfig() Config {
+func MustGenerateConfig() Config {
 	f, err := os.Open("config.yaml")
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -74,7 +76,17 @@ func GenerateConfig() Config {
 	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("Error generating yaml config: %s", err.Error())
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Printf("Error loading env file but will continue: %s", err.Error())
+	}
+
+	err = env.Parse(&cfg)
+	if err != nil {
+		log.Fatalf("Error generating env config: %s", err.Error())
 	}
 
 	return cfg

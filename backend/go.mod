@@ -3,6 +3,8 @@ module github.com/ncpleslie/application-tracker
 go 1.22.0
 
 require (
+	cloud.google.com/go/firestore v1.14.0
+	cloud.google.com/go/storage v1.39.0
 	firebase.google.com/go/v4 v4.13.0
 	github.com/chromedp/chromedp v0.9.5
 	google.golang.org/api v0.167.0
@@ -12,10 +14,8 @@ require (
 	cloud.google.com/go v0.112.0 // indirect
 	cloud.google.com/go/compute v1.24.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/firestore v1.14.0 // indirect
 	cloud.google.com/go/iam v1.1.6 // indirect
 	cloud.google.com/go/longrunning v0.5.5 // indirect
-	cloud.google.com/go/storage v1.39.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -49,11 +49,13 @@ require (
 )
 
 require (
+	github.com/caarlos0/env/v10 v10.0.0
 	github.com/chromedp/cdproto v0.0.0-20240202021202-6d0b6a386732 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.3.2 // indirect
+	github.com/joho/godotenv v1.5.1
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	golang.org/x/sys v0.17.0 // indirect

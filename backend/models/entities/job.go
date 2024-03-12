@@ -16,6 +16,7 @@ type Job struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Status        string
+	Notes         string
 }
 
 func NewJobEntity(job requests.Job) Job {
@@ -24,6 +25,7 @@ func NewJobEntity(job requests.Job) Job {
 		Company:  job.Company,
 		Url:      job.Url,
 		Status:   job.Status,
+		Notes:    job.Notes,
 	}
 }
 
@@ -37,5 +39,6 @@ func (job Job) ToResponse() responses.Job {
 		CreatedAt:     job.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:     job.UpdatedAt.Format(time.RFC3339),
 		Status:        job.Status,
+		Notes:         job.Notes,
 	}
 }

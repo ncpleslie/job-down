@@ -15,7 +15,7 @@ type Storage struct {
 	Client *storage.Client
 }
 
-func NewClient(app *firebase.App, log *log.Logger) *Storage {
+func Must(app *firebase.App, log *log.Logger) *Storage {
 	client, err := app.Storage(context.Background())
 	if err != nil {
 		log.Panicln("Storage Client failed to create client: ", err.Error())
