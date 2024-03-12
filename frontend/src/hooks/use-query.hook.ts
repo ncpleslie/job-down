@@ -11,6 +11,15 @@ import JobsResponse, {
 } from "@/models/responses/jobs.response";
 import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
+import { env } from "@/env";
+
+const getBaseUrl = () => {
+  if (import.meta.env.MODE === "production") {
+    return env.VITE_API_URL;
+  }
+
+  return "/api";
+};
 
 /**
  * A hook to get a job by its ID.
@@ -24,7 +33,7 @@ export const useGetJobByIdQuery = (jobId: string) => {
     queryFn: async () => {
       const token = await user?.getIdToken();
 
-      const response = await fetch(`/api/job/${jobId}`, {
+      const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +61,7 @@ export const useGetJobsSuspenseQuery = () => {
     queryFn: async () => {
       const token = await user?.getIdToken();
 
-      const response = await fetch("/api/jobs", {
+      const response = await fetch(`${getBaseUrl()}/jobs`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,10 +106,11 @@ export const useAddJobMutation = () => {
       company: string;
       url: string;
       status: string;
+      additionalNotes?: string;
     }) => {
       const token = await user?.getIdToken();
 
-      const response = await fetch("/api/job", {
+      const response = await fetch(`${getBaseUrl()}/job`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,10 +166,11 @@ export const useUpdateJobMutation = () => {
       company: string;
       url: string;
       status: string;
+      additionalNotes?: string;
     }) => {
       const token = await user?.getIdToken();
 
-      const response = await fetch(`/api/job/${request.id}`, {
+      const response = await fetch(`${getBaseUrl()}/job/${request.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -196,7 +207,7 @@ export const useDeleteJobMutation = () => {
     mutationFn: async (jobId: string) => {
       const token = await user?.getIdToken();
 
-      const response = await fetch(`/api/job/${jobId}`, {
+      const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

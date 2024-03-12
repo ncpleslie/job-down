@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -19,7 +18,6 @@ import (
 func main() {
 	log := log.New(os.Stdout, "application-tracker: ", log.LstdFlags|log.Lshortfile)
 	config := cfg.MustGenerateConfig()
-	fmt.Println(config)
 	renderer := web.NewRenderer(config.Screenshot, log)
 	defer renderer.Cancel()
 
@@ -31,7 +29,7 @@ func main() {
 	authService := services.NewAuthService(app, log)
 	jobService := services.NewJobService(renderer, storage, db, log)
 
-	srv := server.NewServer(authService, jobService)
+	srv := server.NewServer(config.Server, authService, jobService)
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(config.Server.Host, config.Server.Port),
 		Handler: srv,

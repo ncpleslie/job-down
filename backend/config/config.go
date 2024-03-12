@@ -27,9 +27,9 @@ type Config struct {
 //   - ProjectID: The project ID.
 //   - CredentialsBase64: The base64 encoded credentials for the firebase app.
 type FirebaseConfig struct {
-	StorageBucket     string `yaml:"storageBucket"`
-	ProjectID         string `yaml:"projectId"`
-	CredentialsBase64 string `yaml:"credentialsBase64" env:"CREDENTIALS_BASE64"`
+	StorageBucket     string `yaml:"storageBucket" env:"FIREBASE.STORAGE_BUCKET"`
+	ProjectID         string `yaml:"projectId" env:"FIREBASE.PROJECT_ID"`
+	CredentialsBase64 string `yaml:"credentialsBase64" env:"FIREBASE.CREDENTIALS_BASE64"`
 }
 
 // ServerConfig represents the configuration settings for the server.
@@ -37,9 +37,11 @@ type FirebaseConfig struct {
 // Fields:
 //   - Port: The port the server listens on.
 //   - Host: The host the server listens on.
+//   - ClientAddress: The address of the client.
 type ServerConfig struct {
-	Port string `yaml:"port"`
-	Host string `yaml:"host"`
+	Port          string `yaml:"port" env:"SERVER.PORT"`
+	Host          string `yaml:"host" env:"SERVER.HOST"`
+	ClientAddress string `yaml:"clientAddress" env:"SERVER.CLIENT_ADDRESS"`
 }
 
 // ScreenshotConfig represents the configuration settings for taking screenshots of websites.
@@ -51,12 +53,12 @@ type ServerConfig struct {
 //   - EndDelay: The delay after taking the screenshot.
 //   - Retries: The number of retries to take the screenshot.
 type ScreenshotConfig struct {
-	Width       int64         `yaml:"width"`
-	Height      int64         `yaml:"height"`
-	Delay       time.Duration `yaml:"delayInSeconds"`
-	EndDelay    time.Duration `yaml:"endDelayInSeconds"`
-	Retries     int           `yaml:"retries"`
-	HeadlessUrl string        `yaml:"headlessUrl"`
+	Width       int64         `yaml:"width" env:"SCREENSHOT.WIDTH"`
+	Height      int64         `yaml:"height" env:"SCREENSHOT.HEIGHT"`
+	Delay       time.Duration `yaml:"delayInSeconds" env:"SCREENSHOT.DELAY"`
+	EndDelay    time.Duration `yaml:"endDelayInSeconds" env:"SCREENSHOT.END_DELAY"`
+	Retries     int           `yaml:"retries" env:"SCREENSHOT.RETRIES"`
+	HeadlessUrl string        `yaml:"headlessUrl" env:"SCREENSHOT.HEADLESS_URL"`
 }
 
 // generateConfig loads configuration settings from configuration variables.

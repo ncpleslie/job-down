@@ -8,6 +8,7 @@ screenshot:
 server:
   port: "8080"
   host: "0.0.0.0"
+  clientAddress: "http://localhost:3000"
 firebase:
   storageBucket: "application-tracker-dev.appspot.com"
   projectId: "application-tracker-dev"

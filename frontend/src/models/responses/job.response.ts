@@ -8,6 +8,7 @@ export type JobResponseJson = {
   created_at: string;
   updated_at?: string;
   status: string;
+  additionalNotes?: string;
 };
 
 export default class JobResponse {
@@ -23,6 +24,7 @@ export default class JobResponse {
       ? this.dateStringToTimeAndDate(data.updated_at)
       : undefined;
     this.status = data.status;
+    this.additionalNotes = data.additionalNotes;
   }
 
   public id: string;
@@ -34,6 +36,7 @@ export default class JobResponse {
   public createdAt: string;
   public updatedAt?: string;
   public status: string;
+  public additionalNotes?: string;
 
   private dateStringToTimeAndDate(date: string) {
     const dateObj = new Date(date);

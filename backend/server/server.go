@@ -3,12 +3,14 @@ package server
 import (
 	"net/http"
 
+	"github.com/ncpleslie/application-tracker/config"
 	"github.com/ncpleslie/application-tracker/services"
 )
 
 // NewServer creates a new http.Handler.
 // It sets up the routes and middleware for the server.
 func NewServer(
+	config config.ServerConfig,
 	authService *services.AuthService,
 	jobService *services.JobService,
 ) http.Handler {
@@ -16,8 +18,22 @@ func NewServer(
 	addRoutes(mux, jobService)
 	var handler http.Handler = mux
 	handler = authMiddleware(authService, handler)
+	handler = corsMiddleware(config, handler)
 
 	return handler
+}
+
+func corsMiddleware(config config.ServerConfig, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Add CORS headers here
+		w.Header().Set("Access-Control-Allow-Origin", config.ClientAddress)
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func authMiddleware(authService *services.AuthService, next http.Handler) http.Handler {

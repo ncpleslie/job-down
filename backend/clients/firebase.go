@@ -21,7 +21,7 @@ func Must(config config.FirebaseConfig, log *log.Logger) *firebase.App {
 	opt := option.WithCredentialsJSON(cred)
 	app, err := firebase.NewApp(context.Background(), fbConfig, opt)
 	if err != nil {
-		log.Panicln("Storage Client failed to create Firebase App: ", err.Error())
+		log.Panicln("FB Client failed to create Firebase App: ", err.Error())
 	}
 
 	return app
