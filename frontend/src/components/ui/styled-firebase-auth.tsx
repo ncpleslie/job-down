@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
+import firebase from "firebase/compat/app";
 
 interface StyledFirebaseAuthProps {
   /**
@@ -19,7 +20,7 @@ interface StyledFirebaseAuthProps {
   /**
    * The Firebase App auth instance to use.
    */
-  firebaseAuth: any; // As firebaseui-web
+  firebaseAuth: firebase.auth.Auth;
   className?: string;
 }
 
@@ -59,7 +60,7 @@ const StyledFirebaseAuth: React.FC<StyledFirebaseAuthProps> = ({
       unregisterAuthObserver();
       firebaseUiWidget.reset();
     };
-  }, [firebaseui, uiConfig]);
+  }, [uiConfig, firebaseAuth, uiCallback, userSignedIn]);
 
   return <div className={className} ref={elementRef} />;
 };

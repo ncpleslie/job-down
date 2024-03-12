@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogContent,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useAddJob from "@/hooks/use-add-job.hook";

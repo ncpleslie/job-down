@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Form,
   FormField,
@@ -19,30 +18,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import AppConstants from "@/constants/app.constants";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
 import { Textarea } from "@/components/ui/textarea";
-
-export type JobFormValues = z.infer<typeof formSchema>;
+import { JobFormValues, formSchema } from "@/constants/job-form.constants";
 
 type JobFormProps = {
   onSubmit: (values: JobFormValues) => void;
   defaultValues?: JobFormValues;
   disabled?: boolean;
 };
-
-const formSchema = z.object({
-  position: z.string().trim().min(1, {
-    message: "Position must be at least 1 characters.",
-  }),
-  company: z.string().trim().min(1, {
-    message: "Company must be at least 1 characters.",
-  }),
-  url: z.string().trim().url({
-    message: "Application URL must be a valid URL.",
-  }),
-  additionalNotes: z.string().optional(),
-  status: z.string().trim().min(1, {
-    message: "Status must be at least 1 characters.",
-  }),
-});
 
 const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
   onSubmit,
@@ -89,7 +71,7 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
     if (newDefaultStatus) {
       addStatus(newDefaultStatus);
     }
-  }, [defaultValues]);
+  }, [defaultValues, addStatus]);
 
   const addNewStatus = () => {
     if (newStatus.trim() === "") {

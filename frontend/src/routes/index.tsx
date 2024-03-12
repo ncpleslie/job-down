@@ -19,7 +19,7 @@ function Index() {
     if (user) {
       navigate({ to: "/jobs" });
     }
-  }, [user]);
+  }, [user, navigate]);
 
   if (user) {
     return null;

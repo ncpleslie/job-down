@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { LoadingDialog } from "@/components/ui/loading-dialog";
-import JobForm, { JobFormValues } from "@/components/JobForm";
+import JobForm from "@/components/JobForm";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ImageViewer from "@/components/ImageViewer";
+import { type JobFormValues } from "@/constants/job-form.constants";
 
 export const Route = createLazyFileRoute("/jobs/$jobId/modal")({
   component: JobModal,

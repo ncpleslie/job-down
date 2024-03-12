@@ -1,8 +1,9 @@
 import ImageViewer from "@/components/ImageViewer";
-import JobForm, { JobFormValues } from "@/components/JobForm";
+import JobForm from "@/components/JobForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LoadingDialog } from "@/components/ui/loading-dialog";
+import { type JobFormValues } from "@/constants/job-form.constants";
 import {
   useGetJobByIdQuery,
   useUpdateJobMutation,
