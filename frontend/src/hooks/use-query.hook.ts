@@ -119,7 +119,6 @@ export const useAddJobMutation = () => {
         body: JSON.stringify(request),
       });
 
-      console.log("response", response);
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),

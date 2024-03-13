@@ -52,15 +52,13 @@ func (r Renderer) Screenshot(parent context.Context, url *url.URL) (b []byte, er
 	}()
 
 	return <-resultChan, <-errorChan
-
-	// return r.retry(parent, r.screenshot, o, r.Config.Retries)
 }
 
 func (r Renderer) screenshot(parent context.Context, o ScreenshotOptions) (b []byte, err error) {
 	timeoutCtx, cancel := context.WithTimeout(parent, time.Until(time.Now().Add(o.EndDelay)))
 	defer cancel()
 
-	ctx, cancel := chromedp.NewRemoteAllocator(timeoutCtx, r.Config.HeadlessUrl)
+	ctx, cancel := chromedp.NewRemoteAllocator(timeoutCtx, r.Config.HeadlessUrl, chromedp.NoModifyURL)
 	defer cancel()
 
 	ctx, cancel = chromedp.NewContext(ctx)

@@ -25,10 +25,10 @@ func NewServer(
 
 func corsMiddleware(config config.ServerConfig, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Add CORS headers here
 		w.Header().Set("Access-Control-Allow-Origin", config.ClientAddress)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Cache-Control, Content-Type, Authorization, Last-Event-ID")
+		w.Header().Set("Access-Control-Expose-Headers", "Cache-Control, Content-Type")
 		if r.Method == "OPTIONS" {
 			return
 		}
