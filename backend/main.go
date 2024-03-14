@@ -17,6 +17,7 @@ import (
 
 func main() {
 	log := log.New(os.Stdout, "application-tracker: ", log.LstdFlags|log.Lshortfile)
+	log.Println("Application starting...")
 	config := cfg.MustGenerateConfig()
 	renderer := web.NewRenderer(config.Screenshot, log)
 	defer renderer.Cancel()
@@ -35,7 +36,7 @@ func main() {
 		Handler: srv,
 	}
 
-	log.Printf("listening on %s\n", httpServer.Addr)
+	log.Printf("Application listening on %s\n", httpServer.Addr)
 	if err := httpServer.ListenAndServe(); err != nil {
 		log.Printf("An error occurred. %s\n", err.Error())
 	}

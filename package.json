@@ -1,0 +1,9 @@
+{
+  "name": "application-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.4.2",
+    "typescript-node": "^0.1.3"
+  }
+}
