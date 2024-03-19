@@ -10,13 +10,18 @@
   "dependencies": {
     "@application-tracker/frontend": "workspace:^",
     "@t3-oss/env-core": "^0.9.2",
+    "@tanstack/react-query": "^5.24.8",
+    "@tanstack/react-router": "^1.19.1",
+    "firebase": "^10.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-firebase-hooks": "^5.1.1",
     "webextension-polyfill": "^0.10.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
+    "@tanstack/router-vite-plugin": "^1.19.0",
     "@types/chrome": "^0.0.253",
     "@types/node": "^18.17.1",
     "@types/react": "^18.2.39",
@@ -37,8 +42,8 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
-    "vite": "^4.5.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }

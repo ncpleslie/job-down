@@ -12,6 +12,7 @@ import JobsResponse, {
 import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { env } from "@/env";
+import { User } from "firebase/auth";
 
 const getBaseUrl = () => {
   if (import.meta.env.MODE === "production") {
@@ -25,17 +26,22 @@ const getBaseUrl = () => {
  * A hook to get a job by its ID.
  * @param jobId - The job's id.
  */
-export const useGetJobByIdQuery = (jobId: string) => {
-  const [user] = useIdToken(auth);
+export const useGetJobByIdQuery = (jobId: string, token?: string) => {
+  let authUser: User | null | undefined = null;
+
+  if (!token) {
+    const [user] = useIdToken(auth);
+    authUser = user;
+  }
 
   return useQuery({
     queryKey: ["getJobById", jobId],
     queryFn: async () => {
-      const token = await user?.getIdToken();
+      const authToken = (await authUser?.getIdToken()) ?? token;
 
       const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
       });
       if (!response.ok) {
@@ -46,24 +52,29 @@ export const useGetJobByIdQuery = (jobId: string) => {
 
       return new JobResponse(await response.json());
     },
-    enabled: Boolean(jobId) && Boolean(user),
+    enabled: Boolean(jobId),
   });
 };
 
 /**
  * A hook to get all jobs.
  */
-export const useGetJobsSuspenseQuery = () => {
-  const [user] = useIdToken(auth);
+export const useGetJobsSuspenseQuery = (token?: string) => {
+  let authUser: User | null | undefined = null;
+
+  if (!token) {
+    const [user] = useIdToken(auth);
+    authUser = user;
+  }
 
   return useSuspenseQuery({
     queryKey: ["getJobs"],
     queryFn: async () => {
-      const token = await user?.getIdToken();
+      const authToken = (await authUser?.getIdToken()) ?? token;
 
       const response = await fetch(`${getBaseUrl()}/jobs`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
       });
       if (!response.ok) {
@@ -96,9 +107,14 @@ export const useCreateJobQuery = () => {
 /**
  * A hook to add a job.
  */
-export const useAddJobMutation = () => {
+export const useAddJobMutation = (token?: string) => {
+  let authUser: User | null | undefined = null;
+
+  if (!token) {
+    const [user] = useIdToken(auth);
+    authUser = user;
+  }
   const queryClient = useQueryClient();
-  const [user] = useIdToken(auth);
 
   return useMutation({
     mutationFn: async (request: {
@@ -108,13 +124,13 @@ export const useAddJobMutation = () => {
       status: string;
       additionalNotes?: string;
     }) => {
-      const token = await user?.getIdToken();
+      const authToken = (await authUser?.getIdToken()) ?? token;
 
       const response = await fetch(`${getBaseUrl()}/job`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify(request),
       });
@@ -154,9 +170,14 @@ export const useAddJobMutation = () => {
 /**
  * A hook to update a job.
  */
-export const useUpdateJobMutation = () => {
+export const useUpdateJobMutation = (token?: string) => {
+  let authUser: User | null | undefined = null;
+
+  if (!token) {
+    const [user] = useIdToken(auth);
+    authUser = user;
+  }
   const queryClient = useQueryClient();
-  const [user] = useIdToken(auth);
 
   return useMutation({
     mutationFn: async (request: {
@@ -167,13 +188,13 @@ export const useUpdateJobMutation = () => {
       status: string;
       additionalNotes?: string;
     }) => {
-      const token = await user?.getIdToken();
+      const authToken = (await authUser?.getIdToken()) ?? token;
 
       const response = await fetch(`${getBaseUrl()}/job/${request.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify(request),
       });
@@ -198,18 +219,23 @@ export const useUpdateJobMutation = () => {
 /**
  * A hook to delete a job by its ID.
  */
-export const useDeleteJobMutation = () => {
+export const useDeleteJobMutation = (token?: string) => {
+  let authUser: User | null | undefined = null;
+
+  if (!token) {
+    const [user] = useIdToken(auth);
+    authUser = user;
+  }
   const queryClient = useQueryClient();
-  const [user] = useIdToken(auth);
 
   return useMutation({
     mutationFn: async (jobId: string) => {
-      const token = await user?.getIdToken();
+      const authToken = (await authUser?.getIdToken()) ?? token;
 
       const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
       });
       if (!response.ok) {

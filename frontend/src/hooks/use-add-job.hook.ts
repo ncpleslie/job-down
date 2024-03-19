@@ -3,9 +3,9 @@ import { useAddJobMutation, useCreateJobQuery } from "./use-query.hook";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-const useAddJob = () => {
+const useAddJob = (token?: string) => {
   const { data } = useCreateJobQuery();
-  const { mutate } = useAddJobMutation();
+  const { mutate } = useAddJobMutation(token);
   const router = useRouter();
   const navigate = useNavigate();
 

@@ -4,6 +4,7 @@ import fs from "fs";
 import { defineConfig } from "vite";
 import { crx, ManifestV3Export } from "@crxjs/vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 
 import manifest from "./manifest.json";
 import devManifest from "./manifest.dev.json";
@@ -14,6 +15,7 @@ const pagesDir = resolve(root, "pages");
 const assetsDir = resolve(root, "assets");
 const outDir = resolve(__dirname, "dist");
 const publicDir = resolve(__dirname, "public");
+const popupRoutesDir = resolve(pagesDir, "popup/routes");
 
 const isDev = process.env.__DEV__ === "true";
 
@@ -71,6 +73,9 @@ export default defineConfig({
         "./frontend/tsconfig.json",
       ],
       ignoreConfigErrors: true,
+    }),
+    TanStackRouterVite({
+      routesDirectory: popupRoutesDir,
     }),
   ],
   publicDir,

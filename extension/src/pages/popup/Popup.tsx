@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { App, env } from "@application-tracker/frontend";
+// import { App, env } from "@application-tracker/frontend";
 
 const Popup: React.FC = () => {
   const [img, setImg] = useState<string | null>(null);
@@ -121,9 +121,18 @@ const Popup: React.FC = () => {
   //   {!img && <canvas id="canvas" ref={canvas} />}
   // </div>
 
+  const login = () => {
+    (async () => {
+      const response = await chrome.runtime.sendMessage("login");
+      // do something with response here, not outside the function
+      console.log(response);
+    })();
+  };
+
   return (
     <>
-      <App />
+      {/* <App /> */}
+      <button onClick={login}>Log in</button>
     </>
   );
 };

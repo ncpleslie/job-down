@@ -2,6 +2,10 @@
   "manifest_version": 3,
   "name": "<name in manifest.json>",
   "description": "<description in manifest.json>",
+  "background": {
+    "service_worker": "src/pages/background/index.ts",
+    "type": "module"
+  },
   "options_ui": {
     "page": "src/pages/options/index.html"
   },
@@ -17,7 +21,7 @@
   "content_security_policy": {
     "sandbox": "sandbox allow-scripts; script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com"
   },
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "identity"],
   "devtools_page": "src/pages/devtools/index.html",
   "web_accessible_resources": [
     {

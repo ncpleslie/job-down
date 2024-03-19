@@ -179,20 +179,19 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
   return columns;
 };
 
-const AllJobsTable: React.FC = () => {
-  const { data: jobs } = useGetJobsSuspenseQuery();
-  const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
+interface AllJobsTableProps {
+  jobs: JobResponse[];
+  onDeleteJob: (job: JobResponse) => void;
+  onDeleteJobs: (jobs: JobResponse[]) => void;
+  isPendingDelete: boolean;
+}
 
-  const onDeleteJob = (job: JobResponse) => {
-    mutate(job.id);
-  };
-
-  const onDeleteJobs = (jobs: JobResponse[]) => {
-    jobs.forEach((job) => {
-      mutate(job.id);
-    });
-  };
-
+const AllJobsTable: React.FC<AllJobsTableProps> = ({
+  jobs,
+  isPendingDelete,
+  onDeleteJob,
+  onDeleteJobs,
+}) => {
   const columns = useMemo(() => createColumns(onDeleteJob), []);
 
   return (
