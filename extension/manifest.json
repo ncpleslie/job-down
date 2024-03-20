@@ -19,9 +19,9 @@
     "128": "icon-128.png"
   },
   "content_security_policy": {
-    "sandbox": "sandbox allow-scripts; script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com"
+    "sandbox": "sandbox allow-scripts; script-src 'self' https://www.gstatic.com/ https://www.googleapis.com https://apis.google.com https://securetoken.googleapis.com"
   },
-  "permissions": ["activeTab", "scripting", "identity"],
+  "permissions": ["activeTab", "scripting", "offscreen"],
   "devtools_page": "src/pages/devtools/index.html",
   "web_accessible_resources": [
     {

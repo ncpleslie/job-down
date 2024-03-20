@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './pages/popup/routes/__root'
+import { Route as IndexImport } from './pages/popup/routes/index'
 import { Route as JobsIndexImport } from './pages/popup/routes/jobs/index'
 
 // Create Virtual Routes
@@ -21,6 +22,11 @@ const JobsAddLazyImport = createFileRoute('/jobs/add')()
 const JobsJobIdLazyImport = createFileRoute('/jobs/$jobId')()
 
 // Create/Update Routes
+
+const IndexRoute = IndexImport.update({
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const JobsIndexRoute = JobsIndexImport.update({
   path: '/jobs/',
@@ -45,6 +51,10 @@ const JobsJobIdLazyRoute = JobsJobIdLazyImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/jobs/$jobId': {
       preLoaderRoute: typeof JobsJobIdLazyImport
       parentRoute: typeof rootRoute
@@ -63,6 +73,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
+  IndexRoute,
   JobsJobIdLazyRoute,
   JobsAddLazyRoute,
   JobsIndexRoute,

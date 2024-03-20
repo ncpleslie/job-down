@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 type LoginResponse = User;
 type UserResponse = User;
 type UserTokenResponse = string;
-type SignOutResponse = Promise<void>;
+type SignOutResponse = boolean;
 
 type ResponseType<T> = T extends "login"
   ? LoginResponse
@@ -17,37 +17,50 @@ type ResponseType<T> = T extends "login"
         ? UserTokenResponse
         : never;
 
-const useMessage = () => {
-  const sendMessage = <T extends MessageType>(
-    message: T
-  ): { data: ResponseType<T>; error: Error | null; isPending: boolean } => {
-    const [error, setError] = useState<Error | null>(null);
-    const [response, setResponse] = useState<ResponseType<T> | null>(null);
-    const [isPending, setIsPending] = useState(true);
+// TODO: Add a reactive store to manage the state of the message such as zustand
 
-    useEffect(() => {
-      (async () => {
-        try {
-          setIsPending(true);
-          const result = await chrome.runtime.sendMessage(message);
-          setResponse(result);
-        } catch (err) {
-          console.error(err);
-          setError(new Error(err as string));
-        } finally {
-          setIsPending(false);
-        }
-      })();
-    }, [message]);
+const useMessage = <T extends MessageType>(
+  message: T,
+  options?: { enabled: boolean }
+): {
+  data: ResponseType<T> | null;
+  error: Error | null;
+  isPending: boolean;
+  callAsync: (message: string) => Promise<void>;
+} => {
+  const [error, setError] = useState<Error | null>(null);
+  const [response, setResponse] = useState<ResponseType<T> | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-    return {
-      data: response as ResponseType<T>,
-      error: error,
-      isPending: isPending,
-    };
+  const callAsync = async (message: string) => {
+    try {
+      setIsPending(true);
+      const result = await chrome.runtime.sendMessage(message);
+      setResponse(result);
+    } catch (err) {
+      console.error(err);
+      setError(new Error(err as string));
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  return sendMessage;
+  useEffect(() => {
+    if (!options?.enabled) {
+      return;
+    }
+
+    (async () => {
+      await callAsync(message);
+    })();
+  }, [message]);
+
+  return {
+    data: response as ResponseType<T> | null,
+    error: error,
+    isPending: isPending,
+    callAsync: callAsync,
+  };
 };
 
 export default useMessage;

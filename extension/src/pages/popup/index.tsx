@@ -27,8 +27,8 @@ function init() {
     },
   });
 
-  document.body.style.width = `${AppConstants.width}px`;
-  document.body.style.height = `${AppConstants.height}px`;
+  (rootContainer as HTMLElement).style.width = `${AppConstants.width}px`;
+  (rootContainer as HTMLElement).style.height = `${AppConstants.height}px`;
 
   root.render(
     <StrictMode>

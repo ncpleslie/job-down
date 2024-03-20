@@ -14,10 +14,9 @@ export const Route = createFileRoute("/jobs/")({
 });
 
 function Index() {
-  const sendMessage = useMessage();
-  const { data: token, isPending } = sendMessage("userToken");
+  const { data: token, isPending } = useMessage("userToken");
 
-  if (!token) {
+  if (!isPending) {
     return <LoadingDialog isLoading={true}>Loading</LoadingDialog>;
   }
 
@@ -26,7 +25,7 @@ function Index() {
       <Suspense
         fallback={<LoadingDialog isLoading={true}>Loading</LoadingDialog>}
       >
-        <AllJobsTableAsync token={token} />
+        {token && <AllJobsTableAsync token={token} />}
       </Suspense>
     </div>
   );
@@ -56,12 +55,14 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
   };
 
   return (
-    <AllJobsTable
-      onDeleteJob={onDeleteJob}
-      onDeleteJobs={onDeleteJobs}
-      onViewJob={onViewJob}
-      isPendingDelete={isPendingDelete}
-      jobs={jobs}
-    />
+    <div className="mx-4">
+      <AllJobsTable
+        onDeleteJob={onDeleteJob}
+        onDeleteJobs={onDeleteJobs}
+        onViewJob={onViewJob}
+        isPendingDelete={isPendingDelete}
+        jobs={jobs}
+      />
+    </div>
   );
 };

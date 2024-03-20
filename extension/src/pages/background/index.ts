@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(
             sendResponse(response.user);
           })
           .catch((e) => {
-            console.error(e);
+            console.error("Failed to log in: ", e);
           });
 
         return true;
@@ -26,16 +26,25 @@ chrome.runtime.onMessage.addListener(
         return true;
 
       case "userToken":
-        auth.currentUser?.getIdToken().then((token) => sendResponse(token));
+        auth.currentUser
+          ?.getIdToken()
+          .then((token) => {
+            console.log(token);
+            sendResponse(token);
+          })
+          .catch((e) => {
+            console.error("Failed to get user token: ", e);
+          });
         return true;
 
       case "signOut":
         signOut(auth)
           .then(() => {
-            sendResponse();
+            sendResponse(true);
           })
           .catch((e) => {
-            console.error(e);
+            sendResponse(false);
+            console.error("Failed to sign out: ", e);
           });
 
         return true;
