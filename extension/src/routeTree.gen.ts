@@ -13,51 +13,49 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './pages/popup/routes/__root'
+import { Route as JobsIndexImport } from './pages/popup/routes/jobs/index'
 
 // Create Virtual Routes
 
-const JobsLazyImport = createFileRoute('/jobs')()
 const JobsAddLazyImport = createFileRoute('/jobs/add')()
 const JobsJobIdLazyImport = createFileRoute('/jobs/$jobId')()
 
 // Create/Update Routes
 
-const JobsLazyRoute = JobsLazyImport.update({
-  path: '/jobs',
+const JobsIndexRoute = JobsIndexImport.update({
+  path: '/jobs/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./pages/popup/routes/jobs.lazy').then((d) => d.Route),
-)
+} as any)
 
 const JobsAddLazyRoute = JobsAddLazyImport.update({
-  path: '/add',
-  getParentRoute: () => JobsLazyRoute,
+  path: '/jobs/add',
+  getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import('./pages/popup/routes/jobs.add.lazy').then((d) => d.Route),
+  import('./pages/popup/routes/jobs/add.lazy').then((d) => d.Route),
 )
 
 const JobsJobIdLazyRoute = JobsJobIdLazyImport.update({
-  path: '/$jobId',
-  getParentRoute: () => JobsLazyRoute,
+  path: '/jobs/$jobId',
+  getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import('./pages/popup/routes/jobs.$jobId.lazy').then((d) => d.Route),
+  import('./pages/popup/routes/jobs/$jobId.lazy').then((d) => d.Route),
 )
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/jobs': {
-      preLoaderRoute: typeof JobsLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/jobs/$jobId': {
       preLoaderRoute: typeof JobsJobIdLazyImport
-      parentRoute: typeof JobsLazyImport
+      parentRoute: typeof rootRoute
     }
     '/jobs/add': {
       preLoaderRoute: typeof JobsAddLazyImport
-      parentRoute: typeof JobsLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/jobs/': {
+      preLoaderRoute: typeof JobsIndexImport
+      parentRoute: typeof rootRoute
     }
   }
 }
@@ -65,7 +63,9 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  JobsLazyRoute.addChildren([JobsJobIdLazyRoute, JobsAddLazyRoute]),
+  JobsJobIdLazyRoute,
+  JobsAddLazyRoute,
+  JobsIndexRoute,
 ])
 
 /* prettier-ignore-end */

@@ -147,7 +147,7 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
           />
           <FormField
             control={form.control}
-            name="additionalNotes"
+            name="notes"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Additional Notes</FormLabel>

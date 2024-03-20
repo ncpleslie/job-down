@@ -12,17 +12,16 @@ import { DataTable } from "./ui/data-table";
 import JobResponse from "@/models/responses/job.response";
 import { Link } from "@tanstack/react-router";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  useDeleteJobMutation,
-  useGetJobsSuspenseQuery,
-} from "@/hooks/use-query.hook";
 import { LoadingDialog } from "./ui/loading-dialog";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useMemo } from "react";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
 import AppConstants from "@/constants/app.constants";
 
-const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
+const createColumns = (
+  onDeleteJob: (job: JobResponse) => void,
+  onViewJob: (job: JobResponse) => void,
+) => {
   const columns: ColumnDef<JobResponse>[] = [
     {
       id: "select",
@@ -157,10 +156,10 @@ const createColumns = (onDeleteJob: (job: JobResponse) => void) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>
-                <Link to="/jobs/$jobId/modal" params={{ jobId: job.id }}>
-                  View and Edit
-                </Link>
+              <DropdownMenuItem onClick={() => onViewJob(job)}>
+                {/* <Link to="/jobs/$jobId/modal" params={{ jobId: job.id }}> */}
+                View and Edit
+                {/* </Link> */}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onDeleteJob(job)}>
@@ -183,6 +182,7 @@ interface AllJobsTableProps {
   jobs: JobResponse[];
   onDeleteJob: (job: JobResponse) => void;
   onDeleteJobs: (jobs: JobResponse[]) => void;
+  onViewJob: (job: JobResponse) => void;
   isPendingDelete: boolean;
 }
 
@@ -191,8 +191,9 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
   isPendingDelete,
   onDeleteJob,
   onDeleteJobs,
+  onViewJob,
 }) => {
-  const columns = useMemo(() => createColumns(onDeleteJob), []);
+  const columns = useMemo(() => createColumns(onDeleteJob, onViewJob), []);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { Outlet, createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   AllJobsTable,
   JobResponse,
@@ -7,9 +7,9 @@ import {
   useGetJobsSuspenseQuery,
 } from "@application-tracker/frontend";
 import { Suspense } from "react";
-import useMessage from "../hooks/use-message.hook";
+import useMessage from "@pages/popup/hooks/use-message.hook";
 
-export const Route = createLazyFileRoute("/jobs")({
+export const Route = createFileRoute("/jobs/")({
   component: Index,
 });
 
@@ -28,7 +28,6 @@ function Index() {
       >
         <AllJobsTableAsync token={token} />
       </Suspense>
-      <Outlet />
     </div>
   );
 }
@@ -38,6 +37,7 @@ interface AllJobsTableAsyncProps {
 }
 
 const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
+  const navigate = useNavigate();
   const { data: jobs } = useGetJobsSuspenseQuery(token);
   const { mutate, isPending: isPendingDelete } = useDeleteJobMutation(token);
 
@@ -51,10 +51,15 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
     });
   };
 
+  const onViewJob = (job: JobResponse) => {
+    navigate({ to: `/jobs/$jobId`, params: { jobId: job.id } });
+  };
+
   return (
     <AllJobsTable
       onDeleteJob={onDeleteJob}
       onDeleteJobs={onDeleteJobs}
+      onViewJob={onViewJob}
       isPendingDelete={isPendingDelete}
       jobs={jobs}
     />

@@ -107,24 +107,23 @@ export const useCreateJobQuery = () => {
 /**
  * A hook to add a job.
  */
-export const useAddJobMutation = (token?: string) => {
-  let authUser: User | null | undefined = null;
-
-  if (!token) {
-    const [user] = useIdToken(auth);
-    authUser = user;
-  }
+export const useAddJobMutation = () => {
+  const [user] = useIdToken(auth);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (request: {
-      position: string;
-      company: string;
-      url: string;
-      status: string;
-      additionalNotes?: string;
+      payload: {
+        position: string;
+        company: string;
+        url: string;
+        status: string;
+        notes?: string;
+        image?: string;
+      };
+      token?: string;
     }) => {
-      const authToken = (await authUser?.getIdToken()) ?? token;
+      const authToken = request.token ?? (await user?.getIdToken());
 
       const response = await fetch(`${getBaseUrl()}/job`, {
         method: "POST",
@@ -132,7 +131,7 @@ export const useAddJobMutation = (token?: string) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify(request),
+        body: JSON.stringify(request.payload),
       });
 
       if (!response.ok) {
@@ -152,7 +151,20 @@ export const useAddJobMutation = (token?: string) => {
           return;
         }
 
-        const chunkString = new TextDecoder().decode(value);
+        // The ending could contain a trailing newline character,
+        // so we need to check for that and remove it.
+        const trailingBytes = value.slice(value.length - 3, value.length);
+        const endingMarker = [10, 52, 10];
+        let valueWithoutNewline = value;
+        if (
+          trailingBytes.every((value, index) => value === endingMarker[index])
+        ) {
+          valueWithoutNewline = value.slice(0, value.length - 3);
+        }
+
+        const chunkString = new TextDecoder().decode(valueWithoutNewline, {
+          stream: true,
+        });
         const job = new JobResponse(JSON.parse(chunkString));
         queryClient.setQueryData(["createJob"], () => job);
         queryClient.setQueryData(["getJobById", job.id], () => job);
@@ -170,34 +182,35 @@ export const useAddJobMutation = (token?: string) => {
 /**
  * A hook to update a job.
  */
-export const useUpdateJobMutation = (token?: string) => {
-  let authUser: User | null | undefined = null;
-
-  if (!token) {
-    const [user] = useIdToken(auth);
-    authUser = user;
-  }
+export const useUpdateJobMutation = () => {
+  const [user] = useIdToken(auth);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (request: {
-      id: string;
-      position: string;
-      company: string;
-      url: string;
-      status: string;
-      additionalNotes?: string;
+      payload: {
+        id: string;
+        position: string;
+        company: string;
+        url: string;
+        status: string;
+        notes?: string;
+      };
+      token?: string;
     }) => {
-      const authToken = (await authUser?.getIdToken()) ?? token;
+      const authToken = request.token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/job/${request.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${getBaseUrl()}/job/${request.payload.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(request.payload),
         },
-        body: JSON.stringify(request),
-      });
+      );
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),

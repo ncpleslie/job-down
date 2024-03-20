@@ -28,6 +28,7 @@ const useMessage = () => {
     useEffect(() => {
       (async () => {
         try {
+          setIsPending(true);
           const result = await chrome.runtime.sendMessage(message);
           setResponse(result);
         } catch (err) {

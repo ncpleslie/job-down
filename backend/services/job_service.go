@@ -2,31 +2,28 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
-	"net/url"
 
 	"github.com/ncpleslie/application-tracker/clients/db"
 	store "github.com/ncpleslie/application-tracker/clients/storage"
-	web "github.com/ncpleslie/application-tracker/clients/web_renderer"
 	"github.com/ncpleslie/application-tracker/models/entities"
 	requests "github.com/ncpleslie/application-tracker/models/requests"
 	"github.com/ncpleslie/application-tracker/models/responses"
 )
 
 type JobService struct {
-	WebRenderer *web.Renderer
-	Storage     *store.Storage
-	DB          *db.DB
-	Log         *log.Logger
+	Storage *store.Storage
+	DB      *db.DB
+	Log     *log.Logger
 }
 
-func NewJobService(renderer *web.Renderer, storage *store.Storage, db *db.DB, log *log.Logger) *JobService {
+func NewJobService(storage *store.Storage, db *db.DB, log *log.Logger) *JobService {
 	return &JobService{
-		WebRenderer: renderer,
-		Storage:     storage,
-		DB:          db,
-		Log:         log,
+		Storage: storage,
+		DB:      db,
+		Log:     log,
 	}
 }
 
@@ -81,13 +78,11 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 
 		jobChan <- jobEntity.ToResponse()
 
-		u, err := url.Parse(jobEntity.Url)
-		if err != nil {
-			errChan <- err
+		if job.Image == "" {
 			return
 		}
 
-		b, err := s.WebRenderer.Screenshot(ctx, u)
+		b, err := base64.StdEncoding.DecodeString(job.Image)
 		if err != nil {
 			errChan <- err
 			return

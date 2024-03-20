@@ -27,10 +27,10 @@ func addRoutes(
 	mux.Handle("/", http.NotFoundHandler())
 }
 
-// Returns a handler function for the GET /job/{userId}/{jobId} route.
+// Returns a handler function for the GET /job/{jobId} route.
 // It retrieves a job for the provided user ID from the JobService.
 //
-// GET /job/{userId}/{jobId}
+// GET /job/{jobId}
 func handleJobGet(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -62,13 +62,13 @@ func handleAllJobsGet(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the POST /job/{userId}/{jobId} route.
+// Returns a handler function for the POST /job/{jobId} route.
 // It creates a new job for the provided user ID from the JobService.
 // Expect a response containing a Server-Sent Event.
 // The response will contain the job as it is created without a website screenshot url.
 // Then it will contain the job with the website screenshot url.
 //
-// POST /job/{userId}
+// POST /job
 func handleJobPost(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -97,10 +97,10 @@ func handleJobPost(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the PATCH /job/{userId}/{jobId} route.
+// Returns a handler function for the PATCH /job/{jobId} route.
 // It updates a job for the provided user ID from the JobService.
 //
-// PATCH /job/{userId}/{jobId}
+// PATCH /job/{jobId}
 func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -122,10 +122,10 @@ func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the DELETE /job/{userId}/{jobId} route.
+// Returns a handler function for the DELETE /job/{jobId} route.
 // It deletes a job for the provided user ID from the JobService.
 //
-// DELETE /job/{userId}/{jobId}
+// DELETE /job/{jobId}
 func handleJobDelete(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())

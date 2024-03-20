@@ -1,12 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, signOut } from "firebase/auth";
 import { MessageType } from "../types/message.type";
+import { env } from "@src/env";
 
-const firebaseConfig = {
-  // Replace with env
-};
-
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(env.VITE_FIREBASE_CONFIG);
 const auth = getAuth(app);
 
 chrome.runtime.onMessage.addListener(

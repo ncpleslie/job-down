@@ -1,11 +1,12 @@
 import { JobFormValues } from "@/constants/job-form.constants";
 import { useAddJobMutation, useCreateJobQuery } from "./use-query.hook";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useAddJob = (token?: string) => {
+  const [jobImage, setJobImage] = useState<string | undefined>();
   const { data } = useCreateJobQuery();
-  const { mutate } = useAddJobMutation(token);
+  const { mutate, isPending } = useAddJobMutation();
   const router = useRouter();
   const navigate = useNavigate();
 
@@ -20,14 +21,20 @@ const useAddJob = (token?: string) => {
   }, [data, navigate]);
 
   const onSubmit = (values: JobFormValues) => {
-    mutate(values);
+    mutate({
+      payload: {
+        ...values,
+        image: jobImage,
+      },
+      token,
+    });
   };
 
   const onClose = () => {
     router.history.back();
   };
 
-  return { onSubmit, onClose };
+  return { onSubmit, onClose, setJobImage, jobImage, isPending };
 };
 
 export default useAddJob;

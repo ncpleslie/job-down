@@ -12,7 +12,7 @@ export const formSchema = z.object({
   url: z.string().trim().url({
     message: "Application URL must be a valid URL.",
   }),
-  additionalNotes: z.string().optional(),
+  notes: z.string().optional(),
   status: z.string().trim().min(1, {
     message: "Status must be at least 1 characters.",
   }),

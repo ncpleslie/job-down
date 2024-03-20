@@ -3,6 +3,7 @@ export {
   useGetJobsSuspenseQuery,
   useAddJobMutation,
   useUpdateJobMutation,
+  useCreateJobQuery,
   useDeleteJobMutation,
 } from "./use-query.hook";
 

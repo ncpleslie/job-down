@@ -1,11 +1,12 @@
-import JobView from "@/components/JobView";
-import { LoadingDialog } from "@/components/ui/loading-dialog";
-import { type JobFormValues } from "@/constants/job-form.constants";
 import {
+  JobFormValues,
+  JobView,
+  LoadingDialog,
   useGetJobByIdQuery,
   useUpdateJobMutation,
-} from "@/hooks/use-query.hook";
+} from "@application-tracker/frontend";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import useMessage from "@pages/popup/hooks/use-message.hook";
 
 export const Route = createLazyFileRoute("/jobs/$jobId")({
   component: Job,
@@ -14,10 +15,13 @@ export const Route = createLazyFileRoute("/jobs/$jobId")({
 function Job() {
   const { jobId } = Route.useParams();
   const { data: job } = useGetJobByIdQuery(jobId);
-  const { mutateAsync, isPending } = useUpdateJobMutation();
+  const { mutate, isPending } = useUpdateJobMutation();
+
+  const sendMessage = useMessage();
+  const { data: token } = sendMessage("userToken");
 
   const onSubmit = async (values: JobFormValues) => {
-    await mutateAsync({ payload: { ...values, id: jobId } });
+    mutate({ payload: { ...values, id: jobId }, token });
   };
 
   return (

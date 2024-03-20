@@ -47,6 +47,8 @@ func (s *Storage) UploadFile(ctx context.Context, filename string, data []byte) 
 	return s.GetDownloadURL(ctx, filename)
 }
 
+// Gets a signed URL for the provided filename.
+// The URL will expire in 30 minutes so this shouldn't be stored in the database.
 func (s *Storage) GetDownloadURL(ctx context.Context, filename string) (string, error) {
 
 	bucket, err := s.Client.DefaultBucket()
