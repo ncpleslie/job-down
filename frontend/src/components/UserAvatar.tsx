@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import LoadingSpinner from "./ui/loading-spinner";
 import { User } from "firebase/auth";
+import { UserRound } from "lucide-react";
 
 interface UserAvatarProps {
   user: User | null;
@@ -39,12 +40,16 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, loading, signOut }) => {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={user.photoURL || ""} />
-          <AvatarFallback>{initials || "AT"}</AvatarFallback>
+          <AvatarFallback>{initials || <UserRound />}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>{user.displayName}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        {user.displayName && (
+          <>
+            <DropdownMenuLabel>{user.displayName}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -78,12 +78,13 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 
 		jobChan <- jobEntity.ToResponse()
 
-		if job.Image == "" {
+		if len(job.Image) == 0 {
 			return
 		}
 
-		b, err := base64.StdEncoding.DecodeString(job.Image)
+		b, err := base64.StdEncoding.DecodeString(job.Image[22:])
 		if err != nil {
+			log.Println("Error decoding base64 image: ", err)
 			errChan <- err
 			return
 		}
@@ -91,6 +92,8 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 		filename := fmt.Sprintf("%s/%s.png", userId, jobEntity.Id)
 		downloadUrl, err := s.Storage.UploadFile(ctx, filename, b)
 		if err != nil {
+			log.Println("Error uploading image: ", err)
+
 			errChan <- err
 			return
 		}
@@ -98,6 +101,7 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 		jobEntity.ImageFilename = filename
 		updatedJobEntity, err := s.DB.UpdateJob(ctx, userId, jobEntity.Id, jobEntity)
 		if err != nil {
+			log.Println("Error updating job with image filename: ", err)
 			errChan <- err
 			return
 		}

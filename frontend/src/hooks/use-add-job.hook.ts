@@ -3,7 +3,7 @@ import { useAddJobMutation, useCreateJobQuery } from "./use-query.hook";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-const useAddJob = (token?: string) => {
+const useAddJob = (token?: string | null) => {
   const [jobImage, setJobImage] = useState<string | undefined>();
   const { data } = useCreateJobQuery();
   const { mutate, isPending } = useAddJobMutation();

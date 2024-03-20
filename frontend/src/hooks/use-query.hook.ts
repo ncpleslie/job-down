@@ -121,7 +121,7 @@ export const useAddJobMutation = () => {
         notes?: string;
         image?: string;
       };
-      token?: string;
+      token?: string | null;
     }) => {
       const authToken = request.token ?? (await user?.getIdToken());
 
@@ -196,7 +196,7 @@ export const useUpdateJobMutation = () => {
         status: string;
         notes?: string;
       };
-      token?: string;
+      token?: string | null;
     }) => {
       const authToken = request.token ?? (await user?.getIdToken());
 

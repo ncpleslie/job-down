@@ -40,7 +40,7 @@ function JobModal() {
   };
 
   const onSubmit = async (values: JobFormValues) => {
-    await mutateAsync({ ...values, id: jobId });
+    await mutateAsync({ payload: { ...values, id: jobId } });
     router.history.back();
   };
 

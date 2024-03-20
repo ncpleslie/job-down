@@ -11,7 +11,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import RequiredText from "./ui/required-text";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { PlusSquare } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -26,6 +26,20 @@ type JobFormProps = {
   disabled?: boolean;
 };
 
+/**
+ * A function to check if the form values are different from the default values.
+ * @param value - The form values
+ * @param defaultValue - The default values
+ * @returns - A boolean indicating if the form values are different from the default values
+ */
+const formValuesDifferentFromDefaultValues = <T extends JobFormValues>(
+  values: JobFormValues,
+  defaultValue: T,
+) => {
+  const keys = Object.keys(values) as (keyof JobFormValues)[];
+  return keys.some((key) => values[key] !== defaultValue?.[key]);
+};
+
 const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
   onSubmit,
   defaultValues,
@@ -36,9 +50,14 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
     AppConstants.JobStatuses,
   );
   const [newStatus, setNewStatus] = useState<string>("");
+  const defaultValuesClone = useMemo(
+    () => structuredClone(defaultValues),
+    [defaultValues],
+  );
+
   const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues || {
+    defaultValues: defaultValuesClone || {
       position: "",
       company: "",
       url: "",
@@ -66,12 +85,12 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
   };
 
   useEffect(() => {
-    const newDefaultStatus = defaultValues?.status;
+    const newDefaultStatus = defaultValuesClone?.status;
 
     if (newDefaultStatus) {
       addStatus(newDefaultStatus);
     }
-  }, [defaultValues, addStatus]);
+  }, [defaultValuesClone]);
 
   const addNewStatus = () => {
     if (newStatus.trim() === "") {
@@ -171,8 +190,7 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
                   Status {!disabled && <RequiredText>*</RequiredText>}
                 </FormLabel>
                 <FormDescription>
-                  The status of your application. Did you apply? Did you get a
-                  photo call?
+                  The status of your application. E.g. Applied, Interviewing.
                 </FormDescription>
                 <FormControl>
                   <>
@@ -182,29 +200,17 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
                       disabled={disabled}
                     >
                       {statuses.map((status) => (
-                        <FormField
+                        <FormItem
                           key={status.id}
-                          control={form.control}
-                          name="status"
-                          render={() => {
-                            return (
-                              <FormItem
-                                key={status.id}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <RadioGroupItem
-                                    value={status.id}
-                                    id={status.id}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal capitalize">
-                                  {snakeCaseToTitleCase(status.label)}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={status.id} id={status.id} />
+                          </FormControl>
+                          <FormLabel className="font-normal capitalize">
+                            {snakeCaseToTitleCase(status.label)}
+                          </FormLabel>
+                        </FormItem>
                       ))}
                       {!disabled && (
                         <div className="flex w-[250px] flex-col gap-2">
@@ -253,4 +259,4 @@ const JobFormFooter: React.FC<PropsWithChildren> = ({ children }) => {
 
 JobFormFooter.displayName = "JobFormFooter";
 
-export default { JobForm, JobFormFooter };
+export default { JobForm, JobFormFooter, formValuesDifferentFromDefaultValues };

@@ -39,8 +39,8 @@ const JobView: React.FC<JobViewProps> = ({ job, onSubmit }) => {
               <div className="flex w-full gap-4 sm:justify-start md:justify-between">
                 {editMode && <Button type="submit">Update</Button>}
                 <Button
-                  variant="destructive"
-                  className="mr-auto"
+                  variant={editMode ? "outline" : "destructive"}
+                  className={editMode ? "" : "mr-auto"}
                   onClick={() => setEditMode((prev) => !prev)}
                 >
                   {editMode ? "Cancel" : "Edit"}
