@@ -12,12 +12,12 @@ const AllJobsTableAsync = () => {
   const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
 
   const onDeleteJob = (job: JobResponse) => {
-    mutate(job.id);
+    mutate({ jobId: job.id });
   };
 
   const onDeleteJobs = (jobs: JobResponse[]) => {
     jobs.forEach((job) => {
-      mutate(job.id);
+      mutate({ jobId: job.id });
     });
   };
 

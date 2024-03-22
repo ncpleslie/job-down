@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "./ui/data-table";
 import JobResponse from "@/models/responses/job.response";
-import { Link } from "@tanstack/react-router";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LoadingDialog } from "./ui/loading-dialog";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useMemo } from "react";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
 import AppConstants from "@/constants/app.constants";
+import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const createColumns = (
   onDeleteJob: (job: JobResponse) => void,
@@ -193,7 +193,10 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
   onDeleteJobs,
   onViewJob,
 }) => {
-  const columns = useMemo(() => createColumns(onDeleteJob, onViewJob), []);
+  const columns = useMemo(
+    () => createColumns(onDeleteJob, onViewJob),
+    [onDeleteJob, onViewJob],
+  );
 
   return (
     <>
@@ -204,7 +207,14 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
           onRowDeleteRequested={onDeleteJobs}
           disabledKey={AppConstants.DisabledJobStatuses}
         />
-      ) : null}
+      ) : (
+        <Card>
+          <CardHeader className="flex flex-col items-center justify-center">
+            <CardTitle>No Jobs Found</CardTitle>
+            <CardDescription>Add a new job to get started</CardDescription>
+          </CardHeader>
+        </Card>
+      )}
       <LoadingDialog isLoading={isPendingDelete}>Deleting</LoadingDialog>
     </>
   );

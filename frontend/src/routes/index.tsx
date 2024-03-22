@@ -1,11 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import StyledFirebaseAuth from "@/components/ui/styled-firebase-auth";
 import AppConstants from "@/constants/app.constants";
-import FirebaseConstants from "@/constants/firebase.constants";
-import { auth, firebaseAuth } from "@/constants/firebase";
+import { auth } from "@/constants/firebase";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import LoginForm from "@/components/LoginForm";
+import { LoginFormValues } from "@/constants/login-form.constants";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -14,12 +19,37 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
     if (user) {
       navigate({ to: "/jobs" });
     }
   }, [user, navigate]);
+
+  const onLoginSubmit = async (values: LoginFormValues) => {
+    setLoggingIn(true);
+    if (values.signUpMode) {
+      try {
+        await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password,
+        );
+      } catch (error) {
+        setLoginError((error as Error)?.message);
+      }
+    } else {
+      try {
+        signInWithEmailAndPassword(auth, values.email, values.password);
+      } catch (error) {
+        setLoginError((error as Error)?.message);
+      }
+    }
+
+    setLoggingIn(false);
+  };
 
   if (user) {
     return null;
@@ -33,24 +63,12 @@ function Index() {
     <div className="flex h-full w-full flex-col items-center justify-center md:min-h-screen">
       <div className="relative grid h-full min-w-[100vw] flex-col items-start justify-center lg:container md:min-h-screen md:items-center lg:max-w-none  lg:grid-cols-2 lg:px-0">
         <HeroSection />
-        <div className="mt-4 md:mt-0 lg:p-8">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <div className="flex flex-col space-y-2 text-center">
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Create an account
-              </h2>
-              <hr />
-              <h3 className="text-xl font-semibold tracking-tight">
-                Or Sign In
-              </h3>
-            </div>
-            <div className="mx-4 grid gap-4 md:mx-0">
-              <StyledFirebaseAuth
-                uiConfig={FirebaseConstants.UI_CONFIG}
-                firebaseAuth={firebaseAuth}
-              />
-            </div>
-          </div>
+        <div className="flex w-full items-center justify-center">
+          <LoginForm
+            onSubmit={onLoginSubmit}
+            loginError={loginError}
+            loading={loggingIn}
+          />
         </div>
       </div>
     </div>
@@ -71,7 +89,7 @@ const HeroSection = () => {
         <h1 className="text-white lg:text-black">{AppConstants.AppTitle}</h1>
       </div>
       <div className="relative z-20 mt-auto">
-        <Card className="hidden  backdrop-blur-sm lg:block lg:border-white lg:bg-white/50 lg:text-black">
+        <Card className="hidden backdrop-blur-lg lg:block lg:bg-white/50 lg:text-black">
           <CardHeader>
             <CardTitle>Track your jobs</CardTitle>
           </CardHeader>

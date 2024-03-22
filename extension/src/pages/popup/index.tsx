@@ -1,5 +1,4 @@
 import { createRoot } from "react-dom/client";
-import "@pages/popup/index.css";
 import "@assets/styles/tailwind.css";
 import { StrictMode } from "react";
 import { RouterProvider, createRouter } from "@tanstack/react-router";

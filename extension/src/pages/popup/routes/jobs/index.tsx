@@ -6,7 +6,7 @@ import {
   useDeleteJobMutation,
   useGetJobsSuspenseQuery,
 } from "@application-tracker/frontend";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import useMessage from "@pages/popup/hooks/use-message.hook";
 
 export const Route = createFileRoute("/jobs/")({
@@ -14,9 +14,19 @@ export const Route = createFileRoute("/jobs/")({
 });
 
 function Index() {
-  const { data: token, isPending } = useMessage("userToken");
+  const {
+    data: token,
+    isPending,
+    callAsync: getTokenAsync,
+  } = useMessage({ type: "userToken" }, { enabled: false });
 
-  if (!isPending) {
+  useEffect(() => {
+    if (!token) {
+      getTokenAsync({ type: "userToken" });
+    }
+  }, [token]);
+
+  if (isPending) {
     return <LoadingDialog isLoading={true}>Loading</LoadingDialog>;
   }
 
@@ -38,15 +48,15 @@ interface AllJobsTableAsyncProps {
 const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
   const navigate = useNavigate();
   const { data: jobs } = useGetJobsSuspenseQuery(token);
-  const { mutate, isPending: isPendingDelete } = useDeleteJobMutation(token);
+  const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
 
   const onDeleteJob = (job: JobResponse) => {
-    mutate(job.id);
+    mutate({ jobId: job.id, token });
   };
 
   const onDeleteJobs = (jobs: JobResponse[]) => {
     jobs.forEach((job) => {
-      mutate(job.id);
+      mutate({ jobId: job.id, token });
     });
   };
 

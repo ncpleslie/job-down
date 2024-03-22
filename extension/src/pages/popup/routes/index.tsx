@@ -1,26 +1,54 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import useMessage from "../hooks/use-message.hook";
-import { Button } from "@application-tracker/frontend";
+import {
+  Button,
+  LoginForm,
+  LoginFormValues,
+} from "@application-tracker/frontend";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const { data: signInResult, callAsync: signInAsync } = useMessage("login");
+  const { data: signInResult, callAsync: signInAsync } = useMessage(
+    { type: "signInWithCred" },
+    { enabled: false }
+  );
+  const { data: signUpResult, callAsync: signUpAsync } = useMessage(
+    { type: "signUpWithCred" },
+    { enabled: false }
+  );
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
-  const signIn = async () => {
-    await signInAsync("login");
-    if (signInResult) {
-      navigate({ to: "/jobs", replace: true });
+  const onLoginSubmit = async (values: LoginFormValues) => {
+    setLoggingIn(true);
+
+    if (values.signUpMode) {
+      await signUpAsync({
+        type: "signUpWithCred",
+        payload: { email: values.email, password: values.password },
+      });
+    } else {
+      await signInAsync({
+        type: "signInWithCred",
+        payload: { email: values.email, password: values.password },
+      });
     }
+
+    setLoggingIn(false);
   };
 
   return (
-    <div>
-      <h1>Index</h1>
-      <Button onClick={signIn}>Sign in</Button>
+    <div className="flex justify-center items-center p-4">
+      <LoginForm
+        onSubmit={onLoginSubmit}
+        loginError={loginError}
+        loading={loggingIn}
+      />
     </div>
   );
 }

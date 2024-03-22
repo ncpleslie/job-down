@@ -18,7 +18,7 @@ export const Route = createLazyFileRoute("/jobs/add")({
 function AddJob() {
   const { captureFullPageScreenshot, canvasRef } = useScreenshot();
 
-  const { data: token } = useMessage("userToken");
+  const { data: token } = useMessage({ type: "userToken" });
   const { onSubmit, onClose, setJobImage, jobImage, isPending } =
     useAddJob(token);
 

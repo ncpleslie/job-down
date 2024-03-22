@@ -22,12 +22,11 @@ function Job() {
   const { data: job } = useGetJobByIdQuery(jobId);
   const { mutateAsync, isPending } = useUpdateJobMutation();
 
-  const { data: token } = useMessage("userToken");
+  const { data: token } = useMessage({ type: "userToken" });
 
   const onSubmit = async (values: JobFormValues) => {
-    // The returned submit value may be the same as what was passed in
-    // if the form is not dirty, so we need to check if the values are
-    // different from the job before submitting.
+    // The returned value may be the same as what was passed in
+    // so we need to check if the values are different from the current job before submitting.
     if (!JobForm.formValuesDifferentFromDefaultValues(values, job)) {
       setEditMode(false);
       return;

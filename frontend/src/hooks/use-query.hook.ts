@@ -12,7 +12,6 @@ import JobsResponse, {
 import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { env } from "@/env";
-import { User } from "firebase/auth";
 
 const getBaseUrl = () => {
   if (import.meta.env.MODE === "production") {
@@ -27,17 +26,12 @@ const getBaseUrl = () => {
  * @param jobId - The job's id.
  */
 export const useGetJobByIdQuery = (jobId: string, token?: string) => {
-  let authUser: User | null | undefined = null;
-
-  if (!token) {
-    const [user] = useIdToken(auth);
-    authUser = user;
-  }
+  const [user] = useIdToken(auth);
 
   return useQuery({
     queryKey: ["getJobById", jobId],
     queryFn: async () => {
-      const authToken = (await authUser?.getIdToken()) ?? token;
+      const authToken = token ?? (await user?.getIdToken());
 
       const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
         headers: {
@@ -60,17 +54,12 @@ export const useGetJobByIdQuery = (jobId: string, token?: string) => {
  * A hook to get all jobs.
  */
 export const useGetJobsSuspenseQuery = (token?: string) => {
-  let authUser: User | null | undefined = null;
-
-  if (!token) {
-    const [user] = useIdToken(auth);
-    authUser = user;
-  }
+  const [user] = useIdToken(auth);
 
   return useSuspenseQuery({
     queryKey: ["getJobs"],
     queryFn: async () => {
-      const authToken = (await authUser?.getIdToken()) ?? token;
+      const authToken = token ?? (await user?.getIdToken());
 
       const response = await fetch(`${getBaseUrl()}/jobs`, {
         headers: {
@@ -232,20 +221,15 @@ export const useUpdateJobMutation = () => {
 /**
  * A hook to delete a job by its ID.
  */
-export const useDeleteJobMutation = (token?: string) => {
-  let authUser: User | null | undefined = null;
-
-  if (!token) {
-    const [user] = useIdToken(auth);
-    authUser = user;
-  }
+export const useDeleteJobMutation = () => {
+  const [user] = useIdToken(auth);
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (jobId: string) => {
-      const authToken = (await authUser?.getIdToken()) ?? token;
+    mutationFn: async (payload: { jobId: string; token?: string }) => {
+      const authToken = payload.token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
+      const response = await fetch(`${getBaseUrl()}/job/${payload.jobId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${authToken}`,

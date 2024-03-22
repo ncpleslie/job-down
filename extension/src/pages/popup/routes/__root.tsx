@@ -11,27 +11,24 @@ import {
   UserAvatar,
 } from "@application-tracker/frontend";
 import { useEffect } from "react";
-import AppConstants from "@src/constants/app.constants";
 import { PlusSquare } from "lucide-react";
 
 export const Route = createRootRoute({
   component: () => {
-    const { data: user, isPending, error } = useMessage("user");
-    const { data: signOutResult, callAsync: signOutAsync } = useMessage(
-      "signOut",
-      { enabled: false }
+    const { data: user, isPending, error } = useMessage({ type: "user" });
+    const { callAsync: signOutAsync } = useMessage(
+      { type: "signOut" },
+      {
+        enabled: false,
+      }
     );
     const navigate = useNavigate();
 
     const onSignOut = async () => {
-      await signOutAsync("signOut");
-      if (signOutResult) {
-        navigate({ to: "/" });
-      }
+      await signOutAsync({ type: "signOut" });
     };
 
     useEffect(() => {
-      console.log(user);
       if (user) {
         navigate({ to: "/jobs" });
       }
@@ -51,9 +48,7 @@ export const Route = createRootRoute({
 
     return (
       <>
-        <main
-          style={{ height: AppConstants.height, width: AppConstants.width }}
-        >
+        <main>
           {user && (
             <>
               <nav className="flex w-full flex-row justify-between gap-2 p-2">
