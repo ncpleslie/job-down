@@ -75,7 +75,7 @@ const useScreenshot = () => {
       dataUrls.map(
         (dataUrl) =>
           new Promise<HTMLImageElement>((resolve) => {
-            let img = new Image();
+            const img = new Image();
             img.src = dataUrl;
             img.onload = () => {
               resolve(img);

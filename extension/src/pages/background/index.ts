@@ -52,17 +52,13 @@ chrome.runtime.onMessage.addListener(
         return true;
 
       case "user":
-        const user = auth.currentUser;
-        sendResponse({ payload: user });
+        sendResponse({ payload: auth.currentUser });
         return true;
 
       case "userToken":
-        console.log("Getting user token", auth);
         auth.currentUser
           ?.getIdToken()
-
           .then((token) => {
-            console.log(token);
             sendResponse({ payload: token });
           })
           .catch((e) => {

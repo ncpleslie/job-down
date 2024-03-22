@@ -6,7 +6,10 @@ interface BackgroundState {
   store: {
     [K in MessageType]: ResponseType<Message<MessageType>> | null;
   };
-  set: (key: MessageType, value: any) => void;
+  set: (
+    key: MessageType,
+    value: ResponseType<Message<MessageType>> | null
+  ) => void;
 }
 
 const useBackgroundStore = create<BackgroundState>()(

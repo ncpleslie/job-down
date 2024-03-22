@@ -1,10 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import useMessage from "../hooks/use-message.hook";
-import {
-  Button,
-  LoginForm,
-  LoginFormValues,
-} from "@application-tracker/frontend";
+import { LoginForm, LoginFormValues } from "@application-tracker/frontend";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({
@@ -12,16 +8,17 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { data: signInResult, callAsync: signInAsync } = useMessage(
+  const { callAsync: signInAsync, error: signInError } = useMessage(
     { type: "signInWithCred" },
     { enabled: false }
   );
-  const { data: signUpResult, callAsync: signUpAsync } = useMessage(
+  const { callAsync: signUpAsync, error: signUpError } = useMessage(
     { type: "signUpWithCred" },
     { enabled: false }
   );
-  const navigate = useNavigate();
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginError] = useState<string | null>(
+    signInError?.message || signUpError?.message || null
+  );
   const [loggingIn, setLoggingIn] = useState(false);
 
   const onLoginSubmit = async (values: LoginFormValues) => {

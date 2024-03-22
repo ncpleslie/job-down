@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import fs from "fs";
@@ -74,6 +76,7 @@ export default defineConfig({
       ],
       ignoreConfigErrors: true,
     }),
+    // @ts-ignore
     TanStackRouterVite({
       routesDirectory: popupRoutesDir,
     }),

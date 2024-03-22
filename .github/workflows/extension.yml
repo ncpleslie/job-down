@@ -1,0 +1,100 @@
+name: Build Chrome Extension
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: latest
+
+      - name: Cache .pnpm-store
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.OS }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: extension
+
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: extension
+
+      - name: Lint
+        run: pnpm run lint
+        working-directory: extension
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: extension
+
+      - name: Run Tests
+        run: pnpm run test
+        working-directory: extension
+
+  build:
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: extension
+
+      - name: Build
+        run: pnpm run build
+        working-directory: extension
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: chrome-extension-artifacts
+          path: extension/dist/

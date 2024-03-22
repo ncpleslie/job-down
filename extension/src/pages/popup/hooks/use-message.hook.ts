@@ -28,13 +28,14 @@ const useMessage = <T extends Message<MessageType>>(
       const result = (await chrome.runtime.sendMessage(
         message
       )) as BackgroundMessage<T>;
-      console.log(`Message result for ${message.type}: `, result);
       if (result.error) {
         setError(result.error);
 
         return;
       }
-      store.set(message.type, result.payload);
+
+      // eslint-disable-next-line
+      store.set(message.type, result.payload as any);
       setIsPending(false);
     } catch (err) {
       console.error("Message hook error: ", err);
