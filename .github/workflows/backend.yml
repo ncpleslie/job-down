@@ -1,4 +1,4 @@
-name: Lint and Test Go Application
+name: Lint and Test Backend
 
 on:
   push:
