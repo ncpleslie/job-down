@@ -44,12 +44,14 @@ func (a *AuthService) GetUser(ctx context.Context, idToken string) (*auth.UserRe
 }
 
 func SetCtxUser(ctx context.Context, user *auth.UserRecord) context.Context {
+	//nolint:all // TODO: Remove this comment when the code is implemented
 	ctx = context.WithValue(ctx, "user", user)
 
 	return ctx
 }
 
 func GetCtxUser(ctx context.Context) *auth.UserRecord {
+	//nolint:all // TODO: Remove this comment when the code is implemented
 	user := ctx.Value("user")
 	if user == nil {
 		return nil

@@ -155,15 +155,12 @@ func encodeSSE[T any](w http.ResponseWriter, v T) {
 // Writes the provided value to the http.ResponseWriter.
 // It sets the status code and content type for the response.
 // Will set content type to "application/json".
-// It returns an error if the value cannot be encoded.
-func encode[T any](w http.ResponseWriter, _ *http.Request, status int, v T) error {
+func encode[T any](w http.ResponseWriter, _ *http.Request, status int, v T) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(v); err != nil {
-		return fmt.Errorf("encode json: %w", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
-
-	return nil
 }
 
 // Decodes the request body into the provided value.

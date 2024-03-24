@@ -143,7 +143,10 @@ func (s *JobService) UpdateJob(ctx context.Context, userId string, jobId string,
 }
 
 func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string) error {
-	s.Storage.DeleteFile(ctx, fmt.Sprintf("%s/%s.png", userId, jobId))
+	err := s.Storage.DeleteFile(ctx, fmt.Sprintf("%s/%s.png", userId, jobId))
+	if err != nil {
+		return err
+	}
 
 	return s.DB.DeleteJob(ctx, userId, jobId)
 }

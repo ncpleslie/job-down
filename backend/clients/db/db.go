@@ -57,7 +57,11 @@ func (d *DB) GetJob(ctx context.Context, userId string, jobId string) (entities.
 	}
 
 	var job entities.Job
-	doc.DataTo(&job)
+	err = doc.DataTo(&job)
+	if err != nil {
+		d.Log.Println("DB: Error converting Firestore document to Job: ", err.Error())
+		return entities.Job{}, err
+	}
 	job.Id = doc.Ref.ID
 
 	return entities.Job{
@@ -105,7 +109,11 @@ func (d *DB) GetJobs(ctx context.Context, userId string) ([]entities.Job, error)
 			return nil, err
 		}
 		var job entities.Job
-		doc.DataTo(&job)
+		err = doc.DataTo(&job)
+		if err != nil {
+			d.Log.Println("DB: Error converting Firestore document to Job: ", err.Error())
+			return nil, err
+		}
 		job.Id = doc.Ref.ID
 		jobs = append(jobs, job)
 	}
