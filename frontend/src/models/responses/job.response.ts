@@ -7,8 +7,13 @@ export type JobResponseJson = {
   image_url?: string;
   created_at: string;
   updated_at?: string;
-  status: string;
+  statuses: StatusResponseJson[];
   notes?: string;
+};
+
+export type StatusResponseJson = {
+  status: string;
+  created_at: string;
 };
 
 export default class JobResponse {
@@ -23,7 +28,11 @@ export default class JobResponse {
     this.updatedAt = data.updated_at
       ? this.dateStringToTimeAndDate(data.updated_at)
       : undefined;
-    this.status = data.status;
+
+    const mostRecentStatus = data.statuses.reduce((r, o) =>
+      new Date(o.created_at) < new Date(r.created_at) ? o : r,
+    );
+    this.status = mostRecentStatus.status;
     this.notes = data.notes;
   }
 

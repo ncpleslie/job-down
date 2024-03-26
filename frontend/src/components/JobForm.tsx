@@ -15,10 +15,12 @@ import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { PlusSquare } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import AppConstants from "@/constants/app.constants";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
 import { Textarea } from "@/components/ui/textarea";
-import { JobFormValues, formSchema } from "@/constants/job-form.constants";
+import JobFormConstants, {
+  JobFormValues,
+  formSchema,
+} from "@/constants/job-form.constants";
 
 type JobFormProps = {
   onSubmit: (values: JobFormValues) => void;
@@ -46,8 +48,8 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
   disabled,
   children,
 }) => {
-  const [statuses, setStatuses] = useState<typeof AppConstants.JobStatuses>(
-    AppConstants.JobStatuses,
+  const [statuses, setStatuses] = useState<typeof JobFormConstants.JobStatuses>(
+    JobFormConstants.JobStatuses,
   );
   const [newStatus, setNewStatus] = useState<string>("");
   const defaultValuesClone = useMemo(

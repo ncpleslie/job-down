@@ -19,9 +19,7 @@ const ImageViewer: React.FC<ImgHTMLAttributes<HTMLImageElement>> = ({
         </Skeleton>
       )}
       {src && (
-        <Button
-          variant="outline"
-          type="button"
+        <div
           className="group relative aspect-video h-full w-[364px] cursor-pointer px-1 py-2"
           onClick={openImg}
           title="Open image"
@@ -37,7 +35,7 @@ const ImageViewer: React.FC<ImgHTMLAttributes<HTMLImageElement>> = ({
               <Fullscreen />
             </Button>
           </div>
-        </Button>
+        </div>
       )}
     </>
   );

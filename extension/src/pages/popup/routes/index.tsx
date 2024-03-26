@@ -40,12 +40,18 @@ function Index() {
   };
 
   return (
-    <div className="flex justify-center items-center p-4">
-      <LoginForm
-        onSubmit={onLoginSubmit}
-        loginError={loginError}
-        loading={loggingIn}
-      />
+    <div className="flex flex-col justify-center items-center p-4">
+      <div className="m-8 flex flex-row items-center justify-center gap-4 text-center text-lg font-bold">
+        <img src="/icon.png" alt="logo" className="h-12 w-12" />
+        <h1 className="text-black">Job Down - Job Application Tracker</h1>
+      </div>
+      <div className="flex w-full items-center justify-center p-4">
+        <LoginForm
+          onSubmit={onLoginSubmit}
+          loginError={loginError}
+          loading={loggingIn}
+        />
+      </div>
     </div>
   );
 }

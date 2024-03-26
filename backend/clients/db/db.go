@@ -45,7 +45,7 @@ func (d *DB) AddJob(ctx context.Context, userId string, job entities.Job) (entit
 		ImageFilename: job.ImageFilename,
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
-		Status:        job.Status,
+		Statuses:      job.Statuses,
 	}, nil
 }
 
@@ -72,7 +72,7 @@ func (d *DB) GetJob(ctx context.Context, userId string, jobId string) (entities.
 		ImageFilename: job.ImageFilename,
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
-		Status:        job.Status,
+		Statuses:      job.Statuses,
 	}, nil
 }
 
@@ -92,7 +92,7 @@ func (d *DB) UpdateJob(ctx context.Context, userId string, jobId string, job ent
 		ImageFilename: job.ImageFilename,
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
-		Status:        job.Status,
+		Statuses:      job.Statuses,
 	}, nil
 }
 

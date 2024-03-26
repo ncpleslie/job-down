@@ -31,7 +31,7 @@ export const Route = createLazyFileRoute("/jobs/$jobId/modal")({
 function JobModal() {
   const [editMode, setEditMode] = useState(false);
   const { jobId } = Route.useParams();
-  const { data: job } = useGetJobByIdQuery(jobId);
+  const { data: job, isPending: isJobPending } = useGetJobByIdQuery(jobId);
   const { mutateAsync, isPending } = useUpdateJobMutation();
   const router = useRouter();
 
@@ -72,7 +72,7 @@ function JobModal() {
                     <Accordion type="single" collapsible>
                       <AccordionItem value="item-1">
                         <AccordionTrigger disabled={!job.imageUrl}>
-                          Application Page {!job.imageUrl && "Is Processing..."}
+                          Images {!job.imageUrl && "are processing..."}
                         </AccordionTrigger>
                         <AccordionContent className="flex justify-center">
                           <ImageViewer

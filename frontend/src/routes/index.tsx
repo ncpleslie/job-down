@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import LoginForm from "@/components/LoginForm";
 import { LoginFormValues } from "@/constants/login-form.constants";
+import useHead from "@/hooks/use-head.hook";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -19,6 +20,7 @@ function Index() {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loggingIn, setLoggingIn] = useState(false);
+  useHead("Login");
 
   useEffect(() => {
     if (user) {

@@ -15,13 +15,39 @@ import { LoadingDialog } from "./ui/loading-dialog";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useMemo } from "react";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
-import AppConstants from "@/constants/app.constants";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import JobFormConstants from "@/constants/job-form.constants";
+import { cn } from "@/lib/utils";
 
 const createColumns = (
   onDeleteJob: (job: JobResponse) => void,
   onViewJob: (job: JobResponse) => void,
 ) => {
+  const statusToBadgeColor = (status: string) => {
+    switch (status) {
+      case "applied":
+        return "bg-blue-500 text-white";
+      case "phone_screen":
+        return "bg-yellow-500 text-black";
+      case "coding_challenge":
+        return "bg-yellow-500 text-black";
+      case "first_interview":
+        return "bg-yellow-500 text-black";
+      case "second_interview":
+        return "bg-yellow-500 text-black";
+      case "final_interview":
+        return "bg-yellow-500 text-black";
+      case "offer":
+        return "bg-green-500 text-white";
+      case "accepted":
+        return "bg-green-500 text-white";
+      case "rejected":
+        return "bg-red-500 text-white";
+      default:
+        return "bg-gray-500 text-white";
+    }
+  };
+
   const columns: ColumnDef<JobResponse>[] = [
     {
       id: "select",
@@ -131,8 +157,15 @@ const createColumns = (
         );
       },
       cell: ({ row }) => (
-        <div className="text-center capitalize">
-          {snakeCaseToTitleCase(row.getValue("status"))}
+        <div className="flex justify-center text-center capitalize">
+          <div
+            className={cn(
+              "w-full rounded-lg p-2",
+              statusToBadgeColor(row.getValue("status") as string),
+            )}
+          >
+            {snakeCaseToTitleCase(row.getValue("status"))}
+          </div>
         </div>
       ),
       meta: {
@@ -157,9 +190,7 @@ const createColumns = (
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => onViewJob(job)}>
-                {/* <Link to="/jobs/$jobId/modal" params={{ jobId: job.id }}> */}
                 View and Edit
-                {/* </Link> */}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onDeleteJob(job)}>
@@ -205,7 +236,7 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
           data={jobs}
           columns={columns}
           onRowDeleteRequested={onDeleteJobs}
-          disabledKey={AppConstants.DisabledJobStatuses}
+          disabledKey={JobFormConstants.DisabledJobStatuses}
         />
       ) : (
         <Card>

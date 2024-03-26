@@ -4,16 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { JobFormValues } from "@/constants/job-form.constants";
 import { JobResponse } from "@/models";
-import { useState } from "react";
 
 interface JobViewProps {
   job: JobResponse;
+  editMode: boolean;
+  toggleEditMode: () => void;
   onSubmit: (values: JobFormValues) => void;
 }
 
-const JobView: React.FC<JobViewProps> = ({ job, onSubmit }) => {
-  const [editMode, setEditMode] = useState(false);
-
+const JobView: React.FC<JobViewProps> = ({
+  job,
+  editMode,
+  toggleEditMode,
+  onSubmit,
+}) => {
   return (
     <div className="flex items-center justify-center">
       <Card className="p-8">
@@ -41,7 +45,7 @@ const JobView: React.FC<JobViewProps> = ({ job, onSubmit }) => {
                 <Button
                   variant={editMode ? "outline" : "destructive"}
                   className={editMode ? "" : "mr-auto"}
-                  onClick={() => setEditMode((prev) => !prev)}
+                  onClick={toggleEditMode}
                 >
                   {editMode ? "Cancel" : "Edit"}
                 </Button>

@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go/firestore v1.14.0
 	cloud.google.com/go/storage v1.39.0
 	firebase.google.com/go/v4 v4.13.0
-	github.com/chromedp/chromedp v0.9.5
 	google.golang.org/api v0.167.0
 )
 
@@ -50,14 +49,8 @@ require (
 
 require (
 	github.com/caarlos0/env/v10 v10.0.0
-	github.com/chromedp/cdproto v0.0.0-20240202021202-6d0b6a386732 // indirect
-	github.com/chromedp/sysutil v1.0.0 // indirect
-	github.com/gobwas/httphead v0.1.0 // indirect
-	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.3.2 // indirect
+	github.com/gen2brain/go-fitz v1.23.7
 	github.com/joho/godotenv v1.5.1
-	github.com/josharian/intern v1.0.0 // indirect
-	github.com/mailru/easyjson v0.7.7 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1
 )

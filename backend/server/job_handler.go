@@ -11,26 +11,10 @@ import (
 	"github.com/ncpleslie/application-tracker/services"
 )
 
-// addRoutes adds the routes to the provided http.ServeMux.
-func addRoutes(
-	mux *http.ServeMux,
-	jobService *services.JobService,
-) {
-	mux.Handle("GET /jobs", handleAllJobsGet(jobService))
-	mux.Handle("GET /job/{jobId}", handleJobGet(jobService))
-	mux.Handle("POST /job", handleJobPost(jobService))
-	mux.Handle("PATCH /job/{jobId}", handleJobPatch(jobService))
-	mux.Handle("DELETE /job/{jobId}", handleJobDelete(jobService))
-	mux.Handle("GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-	mux.Handle("/", http.NotFoundHandler())
-}
-
-// Returns a handler function for the GET /job/{jobId} route.
+// Returns a handler function for the GET /jobs/{jobId} route.
 // It retrieves a job for the provided user ID from the JobService.
 //
-// GET /job/{jobId}
+// GET /jobs/{jobId}
 func handleJobGet(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -62,13 +46,13 @@ func handleAllJobsGet(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the POST /job/{jobId} route.
+// Returns a handler function for the POST /jobs/{jobId} route.
 // It creates a new job for the provided user ID from the JobService.
 // Expect a response containing a Server-Sent Event.
 // The response will contain the job as it is created without a website screenshot url.
 // Then it will contain the job with the website screenshot url.
 //
-// POST /job
+// POST /jobs
 func handleJobPost(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -97,10 +81,10 @@ func handleJobPost(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the PATCH /job/{jobId} route.
+// Returns a handler function for the PATCH /jobs/{jobId} route.
 // It updates a job for the provided user ID from the JobService.
 //
-// PATCH /job/{jobId}
+// PATCH /jobs/{jobId}
 func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())
@@ -122,10 +106,10 @@ func handleJobPatch(jobService *services.JobService) http.HandlerFunc {
 	}
 }
 
-// Returns a handler function for the DELETE /job/{jobId} route.
+// Returns a handler function for the DELETE /jobs/{jobId} route.
 // It deletes a job for the provided user ID from the JobService.
 //
-// DELETE /job/{jobId}
+// DELETE /jobs/{jobId}
 func handleJobDelete(jobService *services.JobService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.GetCtxUser(r.Context())

@@ -12,6 +12,7 @@ import JobsResponse, {
 import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { env } from "@/env";
+import AppConstants from "@/constants/app.constants";
 
 const getBaseUrl = () => {
   if (import.meta.env.MODE === "production") {
@@ -33,11 +34,14 @@ export const useGetJobByIdQuery = (jobId: string, token?: string) => {
     queryFn: async () => {
       const authToken = token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/job/${jobId}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}${jobId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
-      });
+      );
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),
@@ -61,11 +65,14 @@ export const useGetJobsSuspenseQuery = (token?: string) => {
     queryFn: async () => {
       const authToken = token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/jobs`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
-      });
+      );
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),
@@ -114,14 +121,17 @@ export const useAddJobMutation = () => {
     }) => {
       const authToken = request.token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/job`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(request.payload),
         },
-        body: JSON.stringify(request.payload),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -190,7 +200,7 @@ export const useUpdateJobMutation = () => {
       const authToken = request.token ?? (await user?.getIdToken());
 
       const response = await fetch(
-        `${getBaseUrl()}/job/${request.payload.id}`,
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}${request.payload.id}`,
         {
           method: "PATCH",
           headers: {
@@ -229,12 +239,15 @@ export const useDeleteJobMutation = () => {
     mutationFn: async (payload: { jobId: string; token?: string }) => {
       const authToken = payload.token ?? (await user?.getIdToken());
 
-      const response = await fetch(`${getBaseUrl()}/job/${payload.jobId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}${payload.jobId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         },
-      });
+      );
       if (!response.ok) {
         throw new Error(
           "An error has occurred: " + httpStatusToText(response.status),

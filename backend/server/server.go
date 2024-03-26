@@ -15,47 +15,41 @@ func NewServer(
 	jobService *services.JobService,
 ) http.Handler {
 	mux := http.NewServeMux()
-	addRoutes(mux, jobService)
+	// Unauthenticated routes
+	mux.Handle("/healthz/", http.StripPrefix("/healthz", addHealthRoutes()))
+
+	// Job routes. Require authentication.
+	mux.Handle("/jobs/", http.StripPrefix("/jobs", addJobRoutes(authService, jobService)))
+
 	var handler http.Handler = mux
-	handler = authMiddleware(authService, handler)
-	handler = corsMiddleware(config, handler)
+	handler = cors(config.ClientAddress, handler)
 
 	return handler
 }
 
-func corsMiddleware(config config.ServerConfig, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", config.ClientAddress)
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Cache-Control, Content-Type, Authorization, Last-Event-ID")
-		w.Header().Set("Access-Control-Expose-Headers", "Cache-Control, Content-Type")
-		if r.Method == "OPTIONS" {
-			return
-		}
-		next.ServeHTTP(w, r)
+func addHealthRoutes() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
 	})
+
+	return mux
 }
 
-func authMiddleware(authService *services.AuthService, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Add authentication logic here
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
+func addJobRoutes(
+	authService *services.AuthService,
+	jobService *services.JobService,
+) http.Handler {
+	mux := http.NewServeMux()
+	mux.Handle("GET /", handleAllJobsGet(jobService))
+	mux.Handle("GET /{jobId}", handleJobGet(jobService))
+	mux.Handle("POST /", handleJobPost(jobService))
+	mux.Handle("PATCH /{jobId}", handleJobPatch(jobService))
+	mux.Handle("DELETE /{jobId}", handleJobDelete(jobService))
 
-		// remove "Bearer " from the auth header
-		authHeader = authHeader[7:]
-		user, err := authService.GetUser(r.Context(), authHeader)
-		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
+	var handler http.Handler = mux
+	handler = userContext(authService, handler)
 
-		ctx := services.SetCtxUser(r.Context(), user)
-		r = r.WithContext(ctx)
-
-		next.ServeHTTP(w, r)
-	})
+	return handler
 }
