@@ -129,11 +129,6 @@ jobs:
         with:
           name: chrome-extension-artifacts
           path: artifacts
-      # Download artifact extracts the zip files. Zip it back up.
-      - name: Zip Extension
-        run: |
-          zip -r extension.zip .
-        working-directory: artifacts
       - uses: softprops/action-gh-release@v1
         with:
           files: artifacts/*
