@@ -6,7 +6,7 @@ COPY . .
 RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-s -w" -a -installsuffix cgo -o main .
 RUN chmod +x main
 
-FROM debian:buster-slim
+FROM golang:1.22.0
 
 WORKDIR /app
 COPY --from=builder /app/main .
