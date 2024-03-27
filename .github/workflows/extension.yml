@@ -13,6 +13,11 @@ on:
 permissions:
   contents: write
 
+env:
+  VITE_API_URL: ${{ secrets.API_URL }}
+  VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+  VITE_WEB_URL: ${{ secrets.WEB_URL }}
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -99,10 +104,6 @@ jobs:
       - name: Build
         run: pnpm run build
         working-directory: extension
-        env:
-          VITE_API_URL: ${{ secrets.API_URL }}
-          VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-          VITE_WEB_URL: ${{ secrets.WEB_URL }}
 
       - name: Zip Extension
         run: |
@@ -128,6 +129,12 @@ jobs:
         with:
           name: chrome-extension-artifacts
           path: artifacts
+      # Download artifact extracts the zip files. Zip it back up.
+      - name: Zip Extension
+        run: |
+          cd dist
+          zip -r extension.zip .
+        working-directory: artifacts
       - uses: softprops/action-gh-release@v1
         with:
           files: artifacts/*
