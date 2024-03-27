@@ -30,7 +30,7 @@ export default class JobResponse {
       : undefined;
 
     const mostRecentStatus = data.statuses.reduce((r, o) =>
-      new Date(o.created_at) < new Date(r.created_at) ? o : r,
+      new Date(o.created_at) > new Date(r.created_at) ? o : r,
     );
     this.status = mostRecentStatus.status;
     this.notes = data.notes;

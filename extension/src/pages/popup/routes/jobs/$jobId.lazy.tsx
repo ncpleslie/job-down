@@ -8,7 +8,7 @@ import {
   Button,
   JobForm,
 } from "@application-tracker/frontend";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import useMessage from "@pages/popup/hooks/use-message.hook";
 import { useState } from "react";
 
@@ -21,6 +21,7 @@ function Job() {
   const { jobId } = Route.useParams();
   const { data: job } = useGetJobByIdQuery(jobId);
   const { mutateAsync, isPending } = useUpdateJobMutation();
+  const navigate = useNavigate();
 
   const { data: token } = useMessage({ type: "userToken" });
 
@@ -28,12 +29,11 @@ function Job() {
     // The returned value may be the same as what was passed in
     // so we need to check if the values are different from the current job before submitting.
     if (!JobForm.formValuesDifferentFromDefaultValues(values, job)) {
-      setEditMode(false);
       return;
     }
 
     await mutateAsync({ payload: { ...values, id: jobId }, token });
-    setEditMode(false);
+    navigate({ to: "/jobs" });
   };
 
   return (
@@ -48,10 +48,12 @@ function Job() {
           </div>
           <ScrollArea className="h-[400px]" type="always">
             <div className="flex flex-col items-center my-2 gap-4 mx-4">
-              <ImageViewer
-                src={job.imageUrl}
-                alt={`${job.position} at ${job.company}`}
-              />
+              {job.imageFilename && (
+                <ImageViewer
+                  src={job.imageUrl}
+                  alt={`${job.position} at ${job.company}`}
+                />
+              )}
               <JobForm.JobForm
                 onSubmit={onSubmit}
                 defaultValues={job}
@@ -67,6 +69,15 @@ function Job() {
                     >
                       {editMode ? "Cancel" : "Edit"}
                     </Button>
+                    {!editMode && (
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        onClick={() => navigate({ to: "/jobs" })}
+                      >
+                        Back
+                      </Button>
+                    )}
                   </div>
                 </JobForm.JobFormFooter>
               </JobForm.JobForm>

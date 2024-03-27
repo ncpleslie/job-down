@@ -6,9 +6,6 @@
     "service_worker": "src/pages/background/index.ts",
     "type": "module"
   },
-  "options_ui": {
-    "page": "src/pages/options/index.html"
-  },
   "action": {
     "default_popup": "src/pages/popup/index.html",
     "default_icon": {
@@ -25,7 +22,7 @@
   "devtools_page": "src/pages/devtools/index.html",
   "web_accessible_resources": [
     {
-      "resources": ["contentStyle.css", "icon-128.png", "icon-32.png"],
+      "resources": ["icon-128.png", "icon-32.png"],
       "matches": []
     }
   ]

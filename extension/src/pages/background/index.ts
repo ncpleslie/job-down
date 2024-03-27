@@ -15,16 +15,6 @@ chrome.runtime.onMessage.addListener(
   (message: PayloadType, sender, sendResponse) => {
     let payload: AuthPayloadType;
     switch (message.type) {
-      // case "loginAnon":
-      //   signInAnonymously(auth)
-      //     .then((response) => {
-      //       sendResponse(response.user);
-      //     })
-      //     .catch((e) => {
-      //       console.error("Failed to log in: ", e);
-      //     });
-      //   return true;
-
       case "signInWithCred":
         payload = message?.payload;
         signInWithEmailAndPassword(auth, payload.email, payload.password)

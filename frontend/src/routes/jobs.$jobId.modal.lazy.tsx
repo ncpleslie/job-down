@@ -31,7 +31,7 @@ export const Route = createLazyFileRoute("/jobs/$jobId/modal")({
 function JobModal() {
   const [editMode, setEditMode] = useState(false);
   const { jobId } = Route.useParams();
-  const { data: job, isPending: isJobPending } = useGetJobByIdQuery(jobId);
+  const { data: job } = useGetJobByIdQuery(jobId);
   const { mutateAsync, isPending } = useUpdateJobMutation();
   const router = useRouter();
 
@@ -69,19 +69,21 @@ function JobModal() {
                   disabled={!editMode}
                 >
                   <JobForm.JobFormFooter>
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1">
-                        <AccordionTrigger disabled={!job.imageUrl}>
-                          Images {!job.imageUrl && "are processing..."}
-                        </AccordionTrigger>
-                        <AccordionContent className="flex justify-center">
-                          <ImageViewer
-                            src={job.imageUrl}
-                            alt={`Job description for ${job.position} at ${job.company}`}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                    {job.imageFilename && (
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1">
+                          <AccordionTrigger disabled={!job.imageUrl}>
+                            Images {!job.imageUrl && "are processing..."}
+                          </AccordionTrigger>
+                          <AccordionContent className="flex justify-center">
+                            <ImageViewer
+                              src={job.imageUrl}
+                              alt={`Job description for ${job.position} at ${job.company}`}
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    )}
 
                     <div className="fixed bottom-0 left-0 z-10 flex w-full justify-between border-t-2 bg-white px-8 py-8">
                       {editMode && <Button type="submit">Update</Button>}

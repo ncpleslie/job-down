@@ -25,12 +25,7 @@ function Job() {
   );
 
   const onSubmit = async (values: JobFormValues) => {
-    if (!job) {
-      return;
-    }
-
-    if (!JobForm.formValuesDifferentFromDefaultValues(values, job)) {
-      setEditMode(false);
+    if (!job || !JobForm.formValuesDifferentFromDefaultValues(values, job)) {
       return;
     }
 

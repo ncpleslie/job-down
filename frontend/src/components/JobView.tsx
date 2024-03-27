@@ -28,10 +28,12 @@ const JobView: React.FC<JobViewProps> = ({
             </h2>
             <p className="text-center">Applied on {job?.createdAt}</p>
           </div>
-          <ImageViewer
-            src={job.imageUrl}
-            alt={`Job description for ${job.position} at ${job.company}`}
-          />
+          {job.imageFilename && (
+            <ImageViewer
+              src={job.imageUrl}
+              alt={`Job description for ${job.position} at ${job.company}`}
+            />
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <JobForm.JobForm

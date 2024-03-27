@@ -42,6 +42,10 @@ func (s *JobService) GetJob(ctx context.Context, userId string, jobId string) (r
 	}
 
 	jobResponse := job.ToResponse()
+	if job.ImageFilename == "" {
+		return jobResponse, nil
+	}
+
 	jobResponse.ImageUrl, err = s.Storage.GetDownloadURL(ctx, job.ImageFilename)
 	if err != nil {
 		return responses.Job{}, err
@@ -90,7 +94,7 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 
 		jobChan <- jobEntity.ToResponse()
 
-		if len(job.Image) == 0 {
+		if job.Image == "" {
 			return
 		}
 
