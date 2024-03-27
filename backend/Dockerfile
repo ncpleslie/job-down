@@ -4,9 +4,9 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-s -w" -a -installsuffix cgo -o main .
+RUN chmod +x main
 
-FROM alpine:latest  
-# RUN apt-get install -y ca-certificates
+FROM debian:buster-slim
 
 WORKDIR /app
 COPY --from=builder /app/main .
