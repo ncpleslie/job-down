@@ -108,14 +108,14 @@ jobs:
       - name: Zip Extension
         run: |
           cd dist
-          zip -r extension.zip .
+          zip -r extension-dev.zip .
         working-directory: extension
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: chrome-extension-artifacts
-          path: extension/dist/extension.zip
+          name: chrome-extension-artifacts-dev
+          path: extension/dist/extension-dev.zip
 
   build-prod:
     environment: production
