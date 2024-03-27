@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"time"
 
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
@@ -15,9 +14,8 @@ import (
 // Fields:
 //   - Screenshots: The configuration settings for taking screenshots of websites.
 type Config struct {
-	Screenshot ScreenshotConfig `yaml:"screenshot"`
-	Server     ServerConfig     `yaml:"server"`
-	Firebase   FirebaseConfig   `yaml:"firebase"`
+	Server   ServerConfig   `yaml:"server"`
+	Firebase FirebaseConfig `yaml:"firebase"`
 }
 
 // FirebaseConfig represents the configuration settings for the firebase app.
@@ -42,23 +40,6 @@ type ServerConfig struct {
 	Port          string `yaml:"port" env:"SERVER.PORT"`
 	Host          string `yaml:"host" env:"SERVER.HOST"`
 	ClientAddress string `yaml:"clientAddress" env:"SERVER.CLIENT_ADDRESS"`
-}
-
-// ScreenshotConfig represents the configuration settings for taking screenshots of websites.
-//
-// Fields:
-//   - Width: The width of the screenshot.
-//   - Height: The height of the screenshot.
-//   - Delay: The delay before taking the screenshot.
-//   - EndDelay: The delay after taking the screenshot.
-//   - Retries: The number of retries to take the screenshot.
-type ScreenshotConfig struct {
-	Width       int64         `yaml:"width" env:"SCREENSHOT.WIDTH"`
-	Height      int64         `yaml:"height" env:"SCREENSHOT.HEIGHT"`
-	Delay       time.Duration `yaml:"delayInSeconds" env:"SCREENSHOT.DELAY"`
-	EndDelay    time.Duration `yaml:"endDelayInSeconds" env:"SCREENSHOT.END_DELAY"`
-	Retries     int           `yaml:"retries" env:"SCREENSHOT.RETRIES"`
-	HeadlessUrl string        `yaml:"headlessUrl" env:"SCREENSHOT.HEADLESS_URL"`
 }
 
 // generateConfig loads configuration settings from configuration variables.

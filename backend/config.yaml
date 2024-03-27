@@ -1,10 +1,3 @@
-screenshot:
-  width: 1920
-  height: 1080
-  delayInSeconds: "300s"
-  endDelayInSeconds: "360s"
-  retries: 3
-  headlessUrl: "ws://172.17.0.1:9222/"
 server:
   port: "8080"
   host: "0.0.0.0"
