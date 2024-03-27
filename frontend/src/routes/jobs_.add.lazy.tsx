@@ -5,7 +5,6 @@ import useAddJob from "@/hooks/use-add-job.hook";
 import useHead from "@/hooks/use-head.hook";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Upload } from "lucide-react";
-import { useRef } from "react";
 
 export const Route = createLazyFileRoute("/jobs/add")({
   component: AddJob,
@@ -13,35 +12,11 @@ export const Route = createLazyFileRoute("/jobs/add")({
 
 function AddJob() {
   useHead("Add");
-  const { onClose, onSubmit, jobImage, setJobImage } = useAddJob();
-  const imageInputRef = useRef<HTMLInputElement>(null);
-
-  const addFile = () => {
-    if (!imageInputRef.current) {
-      return;
-    }
-
-    imageInputRef.current.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) {
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const image = e.target?.result as string;
-        if (image) {
-          setJobImage(image);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
-    imageInputRef.current.click();
-  };
+  const { onClose, onSubmit, jobImage, addFile, imageInputRef } = useAddJob();
 
   return (
     <>
-      <div className="flex items-center justify-center">
+      <div className="mb-12 flex items-center justify-center">
         <Card className="p-8">
           <h2 className="text-center text-xl">Add a new job</h2>
           <JobForm.JobForm onSubmit={onSubmit}>
