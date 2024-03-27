@@ -132,7 +132,6 @@ jobs:
       # Download artifact extracts the zip files. Zip it back up.
       - name: Zip Extension
         run: |
-          cd dist
           zip -r extension.zip .
         working-directory: artifacts
       - uses: softprops/action-gh-release@v1
