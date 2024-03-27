@@ -102,11 +102,15 @@ jobs:
           VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
           VITE_WEB_URL: ${{ secrets.WEB_URL }}
 
+      - name: Zip Extension
+        run: zip -r extension.zip extension/dist
+        working-directory: extension
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: chrome-extension-artifacts
-          path: extension/dist/
+          path: extension/extension.zip
 
   release:
     name: Release
