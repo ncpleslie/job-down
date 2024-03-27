@@ -21,6 +21,7 @@ const useBackgroundStore = create<BackgroundState>()(
           if (
             key === "signInWithCred" ||
             key === "signUpWithCred" ||
+            key === "signInAnonymous" ||
             key === "user"
           ) {
             return {

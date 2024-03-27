@@ -36,6 +36,18 @@ const useMessage = <T extends Message<MessageType>>(
 
       // eslint-disable-next-line
       store.set(message.type, result.payload as any);
+
+      // Get a new token if the user is logged in.
+      // This is to force the token to be updated and persisted in the store.
+      if (
+        message.type === "signInAnonymous" ||
+        message.type === "signInWithCred" ||
+        message.type === "signUpWithCred" ||
+        message.type === "user"
+      ) {
+        await callAsync({ type: "userToken" });
+      }
+
       setIsPending(false);
     } catch (err) {
       console.error("Message hook error: ", err);

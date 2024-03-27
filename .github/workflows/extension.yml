@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  release:
+    types: [created]
+
+permissions:
+  contents: write
 
 jobs:
   setup:
@@ -95,9 +100,26 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.API_URL }}
           VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+          VITE_WEB_URL: ${{ secrets.WEB_URL }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: chrome-extension-artifacts
           path: extension/dist/
+
+  release:
+    name: Release
+    needs: [build]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: chrome-extension-artifacts
+          path: artifacts
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/*

@@ -4,6 +4,7 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInAnonymously,
 } from "firebase/auth";
 import { AuthPayloadType, PayloadType } from "../types/message.type";
 import { env } from "@src/env";
@@ -15,6 +16,17 @@ chrome.runtime.onMessage.addListener(
   (message: PayloadType, sender, sendResponse) => {
     let payload: AuthPayloadType;
     switch (message.type) {
+      case "signInAnonymous":
+        signInAnonymously(auth)
+          .then((response) => {
+            sendResponse({ payload: response.user });
+          })
+          .catch((e) => {
+            sendResponse({ error: e });
+          });
+
+        return true;
+
       case "signInWithCred":
         payload = message?.payload;
         signInWithEmailAndPassword(auth, payload.email, payload.password)
@@ -22,7 +34,6 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ payload: response.user });
           })
           .catch((e) => {
-            console.error("Failed to sign in: ", e);
             sendResponse({ error: e });
           });
 
@@ -35,7 +46,6 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ payload: response.user });
           })
           .catch((e) => {
-            console.error("Failed to sign up: ", e);
             sendResponse({ error: e });
           });
 
@@ -43,16 +53,16 @@ chrome.runtime.onMessage.addListener(
 
       case "user":
         sendResponse({ payload: auth.currentUser });
+
         return true;
 
       case "userToken":
         auth.currentUser
-          ?.getIdToken()
+          ?.getIdToken(true)
           .then((token) => {
             sendResponse({ payload: token });
           })
           .catch((e) => {
-            console.error("Failed to get user token: ", e);
             sendResponse({ error: e });
           });
         return true;
@@ -63,7 +73,6 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ payload: true });
           })
           .catch((e) => {
-            console.error("Failed to sign out: ", e);
             sendResponse({ error: e });
           });
 

@@ -2,10 +2,10 @@ import { auth } from "@/constants/firebase";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInAnonymously,
 } from "firebase/auth";
 import LoginForm from "@/components/LoginForm";
 import { LoginFormValues } from "@/constants/login-form.constants";
@@ -42,12 +42,22 @@ function Index() {
       }
     } else {
       try {
-        signInWithEmailAndPassword(auth, values.email, values.password);
+        await signInWithEmailAndPassword(auth, values.email, values.password);
       } catch (error) {
         setLoginError((error as Error)?.message);
       }
     }
 
+    setLoggingIn(false);
+  };
+
+  const onGuestLogin = async () => {
+    setLoggingIn(true);
+    try {
+      signInAnonymously(auth);
+    } catch (error) {
+      setLoginError((error as Error)?.message);
+    }
     setLoggingIn(false);
   };
 
@@ -68,6 +78,7 @@ function Index() {
       <div className="flex w-full items-center justify-center p-8 lg:w-[500px]">
         <LoginForm
           onSubmit={onLoginSubmit}
+          onGuestLogin={onGuestLogin}
           loginError={loginError}
           loading={loggingIn}
         />

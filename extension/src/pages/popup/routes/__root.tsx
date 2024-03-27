@@ -12,6 +12,7 @@ import {
 } from "@application-tracker/frontend";
 import { useEffect } from "react";
 import { PlusSquare } from "lucide-react";
+import { env } from "@src/env";
 
 export const Route = createRootRoute({
   component: () => {
@@ -26,6 +27,10 @@ export const Route = createRootRoute({
 
     const onSignOut = async () => {
       await signOutAsync({ type: "signOut" });
+    };
+
+    const openWebApp = () => {
+      window.open(env.VITE_WEB_URL, "_blank");
     };
 
     useEffect(() => {
@@ -53,7 +58,11 @@ export const Route = createRootRoute({
             <>
               <nav className="flex w-full flex-row justify-between gap-2 p-2">
                 <div className="flex flex-row gap-2">
-                  <Link to="/jobs">
+                  <Button
+                    variant="link"
+                    onClick={openWebApp}
+                    className="px-0 py-0"
+                  >
                     <img
                       src="/icon.png"
                       width={"40"}
@@ -61,7 +70,7 @@ export const Route = createRootRoute({
                       className="aspect-square"
                       alt="logo"
                     />
-                  </Link>
+                  </Button>
                   <Button variant="outline" asChild>
                     <Link to="/jobs" className="[&.active]:font-bold">
                       Jobs

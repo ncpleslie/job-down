@@ -24,12 +24,14 @@ import { useEffect, useState } from "react";
 
 interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => void;
+  onGuestLogin: () => void;
   loginError: string | null;
   loading: boolean;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({
   onSubmit,
+  onGuestLogin,
   loginError,
   loading,
 }) => {
@@ -53,7 +55,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     <div className="flex grow flex-col gap-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <Card className="flex w-full flex-row items-center justify-center gap-4 p-2">
+          <Card className="flex w-full flex-row items-center justify-center gap-4 px-4 py-2">
             <Button
               type="button"
               onClick={() => setSignUpMode(false)}
@@ -73,12 +75,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex w-full justify-center text-center md:w-[34ch]">
+              <CardTitle className="flex h-12 w-full justify-center text-center md:w-[34ch]">
                 {signUpMode
                   ? "Create a new account"
                   : "Continue with an existing account"}
               </CardTitle>
-              {loginError && (
+              {Boolean(loginError) && (
                 <CardDescription className="rounded border border-red-200 bg-red-100 p-4 text-center text-black">
                   Something went wrong. Please re-enter your account details and
                   try again.
@@ -132,6 +134,16 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </Card>
         </form>
       </Form>
+      <Card className="mt-2 flex w-full flex-row items-center justify-center gap-4 px-6 py-2">
+        <Button
+          type="button"
+          onClick={onGuestLogin}
+          className="w-full"
+          variant="outline"
+        >
+          Continue as Guest
+        </Button>
+      </Card>
     </div>
   );
 };

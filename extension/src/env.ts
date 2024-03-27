@@ -18,6 +18,7 @@ export const env = createEnv({
   client: {
     VITE_API_URL: z.string().min(1),
     VITE_FIREBASE_CONFIG: stringToJSONSchema,
+    VITE_WEB_URL: z.string().min(1),
   },
   runtimeEnv: import.meta.env,
   emptyStringAsUndefined: true,
