@@ -2,8 +2,11 @@ name: Lint and Test Frontend
 on:
   push:
     branches: [main]
+    paths: ["frontend/**"]
   pull_request:
     branches: [main]
+    paths: ["frontend/**"]
+
 jobs:
   setup:
     runs-on: ubuntu-latest

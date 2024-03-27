@@ -3,8 +3,10 @@ name: Build Chrome Extension
 on:
   push:
     branches: [main]
+    paths: ["extension/**"]
   pull_request:
     branches: [main]
+    paths: ["extension/**"]
   release:
     types: [created]
 
@@ -103,7 +105,9 @@ jobs:
           VITE_WEB_URL: ${{ secrets.WEB_URL }}
 
       - name: Zip Extension
-        run: zip -r extension.zip extension/dist
+        run: |
+          cd dist
+          zip -r extension.zip .
         working-directory: extension
 
       - name: Upload Artifacts
