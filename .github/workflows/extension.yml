@@ -114,7 +114,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: chrome-extension-artifacts
-          path: extension/extension.zip
+          path: extension/dist/extension.zip
 
   release:
     name: Release
