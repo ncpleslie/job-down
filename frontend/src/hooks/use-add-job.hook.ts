@@ -6,23 +6,23 @@ import { useEffect, useRef, useState } from "react";
 const useAddJob = (token?: string | null) => {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [jobImage, setJobImage] = useState<string | undefined>();
+  const { mutateAsync, isPending, status } = useAddJobMutation();
   const { data } = useCreateJobQuery();
-  const { mutate, isPending } = useAddJobMutation();
   const router = useRouter();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data) {
+    if (data && status === "success") {
       navigate({
         to: "/jobs/$jobId",
         params: { jobId: data.id },
         replace: true,
       });
     }
-  }, [data, navigate]);
+  }, [data, status, navigate]);
 
-  const onSubmit = (values: JobFormValues) => {
-    mutate({
+  const onSubmit = async (values: JobFormValues) => {
+    await mutateAsync({
       payload: {
         ...values,
         image: jobImage,

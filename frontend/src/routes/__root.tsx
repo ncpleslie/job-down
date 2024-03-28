@@ -2,6 +2,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { LoadingDialog } from "@/components/ui/loading-dialog";
 import { auth } from "@/constants/firebase";
+import { cn } from "@/lib/utils";
 import {
   createRootRoute,
   Link,
@@ -33,10 +34,10 @@ const Root = () => {
 
   return (
     <>
-      <main className={`${user ? "container" : ""} mx-auto min-h-screen`}>
+      <main>
         {user && (
           <>
-            <nav className="flex w-full flex-row justify-between gap-2 p-2">
+            <nav className="fixed z-10 flex w-full flex-row justify-between gap-2 border-b bg-white p-2 lg:px-8">
               <div className="flex flex-row gap-2">
                 <Link to="/jobs">
                   <img
@@ -67,18 +68,24 @@ const Root = () => {
                     }
                     className="[&.active]:font-bold"
                   >
-                    <PlusSquare className="mr-2 h-4 w-4" />
-                    New Job
+                    <PlusSquare className="mr-0 h-6 w-6 md:mr-2 md:h-4 md:w-4" />
+                    <p className="hidden md:block">New Job</p>
                   </Link>
                 </Button>
                 <UserAvatar user={user} loading={loading} signOut={onSignOut} />
               </div>
             </nav>
-            <hr className="mb-8" />
           </>
         )}
 
-        <Outlet />
+        <div
+          className={cn(
+            "mx-auto min-h-screen px-2 pt-16 md:px-8 md:pt-20",
+            user ? "container" : "",
+          )}
+        >
+          <Outlet />
+        </div>
       </main>
     </>
   );

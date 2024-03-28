@@ -62,7 +62,7 @@ function JobModal() {
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[90vh] md:max-h-[75vh]">
-              <div className="mb-24 flex flex-1 items-center space-x-2 overflow-y-auto px-5 py-6 md:px-8">
+              <div className="mb-32 flex flex-1 items-center space-x-2 overflow-y-auto px-5 py-6 md:px-8">
                 <JobForm.JobForm
                   onSubmit={onSubmit}
                   defaultValues={job}

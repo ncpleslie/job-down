@@ -1,0 +1,26 @@
+{
+  "name": "Job Down | Application Tracker",
+  "short_name": "Job Down",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "lang": "en",
+  "scope": "/",
+  "description": "Track your job applications from applying to hired",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "maskable-icon.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "maskable-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "maskable-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

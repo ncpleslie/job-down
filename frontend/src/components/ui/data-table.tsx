@@ -17,11 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "./input";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,6 +35,10 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowDeleteRequested?: (rowSelection: TData[]) => void;
+  filterOptions: {
+    inputFilterKey: string;
+    dropdownFilterKeys: string[];
+  };
   disabledKey?: string;
 }
 
@@ -42,6 +47,7 @@ export function DataTable<TData, TValue>({
   data,
   onRowDeleteRequested,
   disabledKey,
+  filterOptions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -70,17 +76,51 @@ export function DataTable<TData, TValue>({
     onRowDeleteRequested?.(selectedRows);
   };
 
+  type filterOptionsType = typeof filterOptions.dropdownFilterKeys;
+
+  const uniqueValues = useMemo<{
+    [Key in filterOptionsType[number]]: string[];
+  }>(() => {
+    return filterOptions.dropdownFilterKeys?.reduce((prev, curr) => {
+      const values = table
+        .getCoreRowModel()
+        .flatRows.map((row) => row.getValue(curr)) as string[];
+      const set = Array.from(new Set(values));
+
+      return { ...prev, [curr]: set };
+    }, {});
+  }, [table]);
+
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
-          placeholder="Filter By Company..."
-          value={(table.getColumn("company")?.getFilterValue() as string) ?? ""}
+          placeholder={`Filter by ${filterOptions.inputFilterKey}...`}
+          value={
+            (table
+              .getColumn(filterOptions.inputFilterKey)
+              ?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("company")?.setFilterValue(event.target.value)
+            table
+              .getColumn(filterOptions.inputFilterKey)
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
+        {filterOptions.dropdownFilterKeys.map((filterOption) => {
+          return (
+            table.getColumn(filterOption) && (
+              <DataTableFacetedFilter
+                key={filterOption}
+                column={table.getColumn(filterOption)}
+                title={filterOption}
+                options={uniqueValues[filterOption]}
+              />
+            )
+          );
+        })}
+
         <div className="ml-auto flex flex-row items-center gap-8">
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <Button variant="destructive" onClick={onDeleteRow}>
@@ -147,7 +187,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex-1 py-8 text-sm text-muted-foreground">
+      <div className="hidden flex-1 py-8 text-sm text-muted-foreground lg:block">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected
       </div>

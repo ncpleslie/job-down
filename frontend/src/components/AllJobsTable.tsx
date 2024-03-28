@@ -12,12 +12,19 @@ import { DataTable } from "./ui/data-table";
 import JobResponse from "@/models/responses/job.response";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LoadingDialog } from "./ui/loading-dialog";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, PlusSquare } from "lucide-react";
 import { useMemo } from "react";
 import { snakeCaseToTitleCase } from "@/lib/utils/helper.utils";
-import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import JobFormConstants from "@/constants/job-form.constants";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 
 const createColumns = (
   onDeleteJob: (job: JobResponse) => void,
@@ -118,6 +125,9 @@ const createColumns = (
       meta: {
         className: "p-2 md:p-4",
       },
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
       accessorKey: "createdAt",
@@ -172,6 +182,9 @@ const createColumns = (
         className: "hidden lg:table-cell",
       },
       sortingFn: "alphanumeric",
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
       id: "actions",
@@ -236,6 +249,10 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
           data={jobs}
           columns={columns}
           onRowDeleteRequested={onDeleteJobs}
+          filterOptions={{
+            inputFilterKey: "company",
+            dropdownFilterKeys: ["status", "position"],
+          }}
           disabledKey={JobFormConstants.DisabledJobStatuses}
         />
       ) : (
@@ -244,6 +261,14 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
             <CardTitle>No Jobs Found</CardTitle>
             <CardDescription>Add a new job to get started</CardDescription>
           </CardHeader>
+          <CardContent className="flex w-full justify-center">
+            <Button variant="outline" asChild>
+              <Link to="/jobs/add/modal">
+                <PlusSquare className="mr-2 h-6 w-6" />
+                New Job
+              </Link>
+            </Button>
+          </CardContent>
         </Card>
       )}
       <LoadingDialog isLoading={isPendingDelete}>Deleting</LoadingDialog>
