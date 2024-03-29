@@ -1,6 +1,7 @@
 import {
   useDeleteJobMutation,
   useGetJobsSuspenseQuery,
+  useUpdateJobMutation,
 } from "@/hooks/use-query.hook";
 import AllJobsTable from "./AllJobsTable";
 import JobResponse from "@/models/responses/job.response";
@@ -10,6 +11,7 @@ const AllJobsTableAsync = () => {
   const navigate = useNavigate();
   const { data: jobs } = useGetJobsSuspenseQuery();
   const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
+  const { mutate: updateJobStatus } = useUpdateJobMutation();
 
   const onDeleteJob = (job: JobResponse) => {
     mutate({ jobId: job.id });
@@ -25,11 +27,16 @@ const AllJobsTableAsync = () => {
     navigate({ to: "/jobs/$jobId/modal", params: { jobId: job.id } });
   };
 
+  const onUpdateJob = async (job: JobResponse) => {
+    updateJobStatus({ payload: job });
+  };
+
   return (
     <AllJobsTable
       onDeleteJob={onDeleteJob}
       onDeleteJobs={onDeleteJobs}
       onViewJob={onViewJob}
+      onUpdateJob={onUpdateJob}
       isPendingDelete={isPendingDelete}
       jobs={jobs}
     />

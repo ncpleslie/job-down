@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-4 py-4">
+      <div className="flex flex-wrap items-center gap-4 py-4">
         <Input
           placeholder={`Filter by ${filterOptions.inputFilterKey}...`}
           value={
@@ -106,21 +106,22 @@ export function DataTable<TData, TValue>({
               .getColumn(filterOptions.inputFilterKey)
               ?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="w-full md:max-w-sm"
         />
-        {filterOptions.dropdownFilterKeys.map((filterOption) => {
-          return (
-            table.getColumn(filterOption) && (
-              <DataTableFacetedFilter
-                key={filterOption}
-                column={table.getColumn(filterOption)}
-                title={filterOption}
-                options={uniqueValues[filterOption]}
-              />
-            )
-          );
-        })}
-
+        <div className="flex gap-4">
+          {filterOptions.dropdownFilterKeys.map((filterOption) => {
+            return (
+              table.getColumn(filterOption) && (
+                <DataTableFacetedFilter
+                  key={filterOption}
+                  column={table.getColumn(filterOption)}
+                  title={filterOption}
+                  options={uniqueValues[filterOption]}
+                />
+              )
+            );
+          })}
+        </div>
         <div className="ml-auto flex flex-row items-center gap-8">
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <Button variant="destructive" onClick={onDeleteRow}>
