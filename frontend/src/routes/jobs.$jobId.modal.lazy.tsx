@@ -52,7 +52,7 @@ function JobModal() {
     <>
       <Dialog open={true} onOpenChange={onClose}>
         {job && (
-          <DialogContent className="max-h-[100vh] md:max-h-[90vh] md:rounded-md">
+          <DialogContent className="max-h-[100dvh] md:max-h-[90dvh] md:rounded-md">
             <DialogHeader className="mt-6 flex items-center justify-center border-b-2 px-8 pb-4">
               <DialogTitle>
                 {job?.position} @ {job?.company}
