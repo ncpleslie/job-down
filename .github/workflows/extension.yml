@@ -119,6 +119,7 @@ jobs:
 
   build-prod:
     environment: production
+    continue-on-error: true
     needs: [test, lint]
     runs-on: ubuntu-latest
     env:

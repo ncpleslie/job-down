@@ -3,6 +3,7 @@ import JobForm from "@/components/JobForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { JobFormValues } from "@/constants/job-form.constants";
+import { cn } from "@/lib/utils";
 import { JobResponse } from "@/models";
 
 interface JobViewProps {
@@ -21,7 +22,12 @@ const JobView: React.FC<JobViewProps> = ({
   return (
     <div className="flex items-center justify-center">
       <Card className="p-8">
-        <div className="flex flex-row flex-wrap justify-between gap-4">
+        <div
+          className={cn(
+            "mb-8 flex flex-row flex-wrap gap-4",
+            job.imageFilename ? "justify-between" : "justify-center",
+          )}
+        >
           <div className="flex flex-col gap-2">
             <h2 className="text-center text-xl">
               {job?.position} @ {job?.company}

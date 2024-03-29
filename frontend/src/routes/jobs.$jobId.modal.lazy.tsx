@@ -52,7 +52,7 @@ function JobModal() {
     <>
       <Dialog open={true} onOpenChange={onClose}>
         {job && (
-          <DialogContent className="max-h-[100vh] md:max-h-[90vh] md:rounded-md">
+          <DialogContent className="max-h-[100dvh] md:max-h-[90dvh] md:rounded-md">
             <DialogHeader className="mt-6 flex items-center justify-center border-b-2 px-8 pb-4">
               <DialogTitle>
                 {job?.position} @ {job?.company}
@@ -62,7 +62,7 @@ function JobModal() {
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[90vh] md:max-h-[75vh]">
-              <div className="mb-24 flex flex-1 items-center space-x-2 overflow-y-auto px-5 py-6 md:px-8">
+              <div className="mb-48 flex flex-1 items-center space-x-2 overflow-y-auto px-5 py-6 md:px-8">
                 <JobForm.JobForm
                   onSubmit={onSubmit}
                   defaultValues={job}

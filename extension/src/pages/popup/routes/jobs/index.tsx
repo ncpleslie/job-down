@@ -5,6 +5,7 @@ import {
   LoadingDialog,
   useDeleteJobMutation,
   useGetJobsSuspenseQuery,
+  useUpdateJobMutation,
 } from "@application-tracker/frontend";
 import { Suspense, useEffect } from "react";
 import useMessage from "@pages/popup/hooks/use-message.hook";
@@ -49,6 +50,7 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
   const navigate = useNavigate();
   const { data: jobs } = useGetJobsSuspenseQuery(token);
   const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
+  const { mutate: updateJob } = useUpdateJobMutation();
 
   const onDeleteJob = (job: JobResponse) => {
     mutate({ jobId: job.id, token });
@@ -58,6 +60,10 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
     jobs.forEach((job) => {
       mutate({ jobId: job.id, token });
     });
+  };
+
+  const onUpdateJob = (job: JobResponse) => {
+    updateJob({ payload: job, token });
   };
 
   const onViewJob = (job: JobResponse) => {
@@ -70,6 +76,7 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
         onDeleteJob={onDeleteJob}
         onDeleteJobs={onDeleteJobs}
         onViewJob={onViewJob}
+        onUpdateJob={onUpdateJob}
         isPendingDelete={isPendingDelete}
         jobs={jobs}
       />

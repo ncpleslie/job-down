@@ -12,7 +12,7 @@ function Index() {
   useHead("Jobs");
 
   return (
-    <div>
+    <div className="mb-8">
       <Suspense
         fallback={<LoadingDialog isLoading={true}>Loading</LoadingDialog>}
       >

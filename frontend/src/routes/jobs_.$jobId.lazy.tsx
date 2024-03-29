@@ -35,14 +35,16 @@ function Job() {
 
   return (
     <>
-      {job && (
-        <JobView
-          job={job}
-          editMode={editMode}
-          toggleEditMode={() => setEditMode((prev) => !prev)}
-          onSubmit={onSubmit}
-        />
-      )}
+      <div className="mb-8">
+        {job && (
+          <JobView
+            job={job}
+            editMode={editMode}
+            toggleEditMode={() => setEditMode((prev) => !prev)}
+            onSubmit={onSubmit}
+          />
+        )}
+      </div>
       <LoadingDialog isLoading={!job}>Loading</LoadingDialog>
       <LoadingDialog isLoading={isPending}>Updating</LoadingDialog>
     </>
