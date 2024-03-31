@@ -56,6 +56,10 @@ export default class JobFormConstants {
       id: "rejected",
       label: "Rejected",
     },
+    {
+      id: "withdrawn",
+      label: "Withdrawn",
+    },
   ];
 
   public static readonly DisabledJobStatuses = "rejected";

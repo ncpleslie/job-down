@@ -114,10 +114,11 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 				errChan <- err
 				return
 			}
-			mimeType = "png"
+			mimeType = "image/png"
 		}
 
-		filename := fmt.Sprintf("%s/%s.%s", userId, jobEntity.Id, mimeType)
+		extension := strings.Split(mimeType, "/")[1]
+		filename := fmt.Sprintf("%s/%s.%s", userId, jobEntity.Id, extension)
 		downloadUrl, err := s.Storage.UploadFile(ctx, filename, b)
 		if err != nil {
 			log.Println("Error uploading image: ", err)
@@ -236,6 +237,8 @@ func (s *JobService) GetStats(ctx context.Context, userId string) (responses.Sta
 			stats.Current.Rejected++
 		case "accepted":
 			stats.Current.Accepted++
+		case "withdrawn":
+			stats.Current.Withdrawn++
 		default:
 			stats.Current.Other++
 		}
@@ -256,13 +259,15 @@ func (s *JobService) GetStats(ctx context.Context, userId string) (responses.Sta
 				stats.Historical.Rejected++
 			case "accepted":
 				stats.Historical.Accepted++
+			case "withdrawn":
+				stats.Historical.Withdrawn++
 			default:
 				stats.Historical.Other++
 			}
 		}
 	}
 
-	stats.TotalJobs = len(jobs)
+	stats.Total = len(jobs)
 	return stats, nil
 }
 

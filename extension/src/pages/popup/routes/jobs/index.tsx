@@ -79,6 +79,7 @@ const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
         onUpdateJob={onUpdateJob}
         isPendingDelete={isPendingDelete}
         jobs={jobs}
+        addNewJobUrl="/jobs/add"
       />
     </div>
   );

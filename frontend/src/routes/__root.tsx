@@ -53,6 +53,11 @@ const Root = () => {
                     Jobs
                   </Link>
                 </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/jobs/stats" className="[&.active]:font-bold">
+                    Stats
+                  </Link>
+                </Button>
               </div>
               <div className="flex gap-2">
                 <Button

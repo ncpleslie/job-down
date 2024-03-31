@@ -20,6 +20,7 @@ import { Route as IndexImport } from './routes/index'
 const JobsLazyImport = createFileRoute('/jobs')()
 const JobsAddLazyImport = createFileRoute('/jobs/add')()
 const JobsJobIdLazyImport = createFileRoute('/jobs/$jobId')()
+const JobsStatsLazyImport = createFileRoute('/jobs/stats')()
 const JobsAddModalLazyImport = createFileRoute('/jobs/add/modal')()
 const JobsJobIdModalLazyImport = createFileRoute('/jobs/$jobId/modal')()
 
@@ -44,6 +45,11 @@ const JobsJobIdLazyRoute = JobsJobIdLazyImport.update({
   path: '/jobs/$jobId',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/jobs_.$jobId.lazy').then((d) => d.Route))
+
+const JobsStatsLazyRoute = JobsStatsLazyImport.update({
+  path: '/stats',
+  getParentRoute: () => JobsLazyRoute,
+} as any).lazy(() => import('./routes/jobs.stats.lazy').then((d) => d.Route))
 
 const JobsAddModalLazyRoute = JobsAddModalLazyImport.update({
   path: '/add/modal',
@@ -71,6 +77,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JobsLazyImport
       parentRoute: typeof rootRoute
     }
+    '/jobs/stats': {
+      preLoaderRoute: typeof JobsStatsLazyImport
+      parentRoute: typeof JobsLazyImport
+    }
     '/jobs/$jobId': {
       preLoaderRoute: typeof JobsJobIdLazyImport
       parentRoute: typeof rootRoute
@@ -94,7 +104,11 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  JobsLazyRoute.addChildren([JobsJobIdModalLazyRoute, JobsAddModalLazyRoute]),
+  JobsLazyRoute.addChildren([
+    JobsStatsLazyRoute,
+    JobsJobIdModalLazyRoute,
+    JobsAddModalLazyRoute,
+  ]),
   JobsJobIdLazyRoute,
   JobsAddLazyRoute,
 ])

@@ -13,6 +13,7 @@ import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { env } from "@/env";
 import AppConstants from "@/constants/app.constants";
+import StatsResponse from "@/models/responses/stats.response";
 
 const getBaseUrl = () => {
   if (import.meta.env.MODE === "production") {
@@ -290,9 +291,7 @@ export const useGetJobStatsQuery = () => {
         );
       }
 
-      console.log(await response.json());
-
-      return await response.json();
+      return new StatsResponse(await response.json());
     },
   });
 };

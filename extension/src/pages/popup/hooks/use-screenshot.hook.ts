@@ -28,7 +28,10 @@ const useScreenshot = () => {
 
     await chrome.scripting.executeScript({
       target: { tabId: activeTab.id },
-      function: () => window.scrollTo(0, 0),
+      function: async () => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      },
     });
 
     async function captureScreenshot() {
@@ -63,7 +66,7 @@ const useScreenshot = () => {
       }
     }
 
-    captureScreenshot();
+    await captureScreenshot();
     setCapturing(false);
   }
 
