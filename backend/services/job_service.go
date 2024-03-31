@@ -14,11 +14,11 @@ import (
 
 	"github.com/gen2brain/go-fitz"
 
-	"github.com/ncpleslie/application-tracker/clients/db"
-	store "github.com/ncpleslie/application-tracker/clients/storage"
-	"github.com/ncpleslie/application-tracker/models/entities"
-	requests "github.com/ncpleslie/application-tracker/models/requests"
-	"github.com/ncpleslie/application-tracker/models/responses"
+	"github.com/ncpleslie/job-down/clients/db"
+	store "github.com/ncpleslie/job-down/clients/storage"
+	"github.com/ncpleslie/job-down/models/entities"
+	requests "github.com/ncpleslie/job-down/models/requests"
+	"github.com/ncpleslie/job-down/models/responses"
 )
 
 type JobService struct {
@@ -149,14 +149,25 @@ func (s *JobService) UpdateJob(ctx context.Context, userId string, jobId string,
 		return responses.Job{}, err
 	}
 
+	// Don't allow the same status to be added multiple times in a row.
+	mostRecentStatus := jobEntity.Statuses[0]
+	for _, status := range jobEntity.Statuses {
+		if status.CreatedAt.After(mostRecentStatus.CreatedAt) {
+			mostRecentStatus = status
+		}
+	}
+
 	statuses := make([]entities.Status, 0)
-	statuses = append(statuses, entities.NewStatusEntity(job.Status))
 	statuses = append(statuses, jobEntity.Statuses...)
+	if mostRecentStatus.Status != job.Status {
+		statuses = append(statuses, entities.NewStatusEntity(job.Status))
+	}
 
 	jobEntity.Position = job.Position
 	jobEntity.Company = job.Company
 	jobEntity.Url = job.Url
 	jobEntity.Statuses = statuses
+	jobEntity.Notes = job.Notes
 
 	updatedJobEntity, err := s.DB.UpdateJob(ctx, userId, jobId, jobEntity)
 	if err != nil {
@@ -186,6 +197,73 @@ func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string)
 	}
 
 	return s.DB.DeleteJob(ctx, userId, jobId)
+}
+
+// GetStats returns the stats for a user.
+// The stats include the total number of jobs, the number of jobs in each status, and the number of jobs in each status historically.
+//
+// TODO: Perhaps refactor this to be persistent in the database
+//
+// E.g have a collection of stats for each user and update it every time a job is added/updated.
+func (s *JobService) GetStats(ctx context.Context, userId string) (responses.Stats, error) {
+	jobs, err := s.DB.GetJobs(ctx, userId)
+	if err != nil {
+		return responses.Stats{}, err
+	}
+
+	var stats responses.Stats
+	for _, job := range jobs {
+		mostRecentStatus := job.Statuses[0]
+		for _, status := range job.Statuses {
+			if status.CreatedAt.After(mostRecentStatus.CreatedAt) {
+				mostRecentStatus = status
+			}
+		}
+
+		// TODO: Refactor this to reduce duplication
+		switch mostRecentStatus.Status {
+		case "applied":
+			stats.Current.Applied++
+		case "phone_screen":
+		case "coding_challenge":
+		case "first_interview":
+		case "second_interview":
+		case "final_interview":
+			stats.Current.Interview++
+		case "offer":
+			stats.Current.Offer++
+		case "rejected":
+			stats.Current.Rejected++
+		case "accepted":
+			stats.Current.Accepted++
+		default:
+			stats.Current.Other++
+		}
+
+		for _, status := range job.Statuses {
+			switch status.Status {
+			case "applied":
+				stats.Historical.Applied++
+			case "phone_screen":
+			case "coding_challenge":
+			case "first_interview":
+			case "second_interview":
+			case "final_interview":
+				stats.Historical.Interview++
+			case "offer":
+				stats.Historical.Offer++
+			case "rejected":
+				stats.Historical.Rejected++
+			case "accepted":
+				stats.Historical.Accepted++
+			default:
+				stats.Historical.Other++
+			}
+		}
+	}
+
+	stats.TotalJobs = len(jobs)
+	return stats, nil
 }
 
 // Converts a PDF byte slice to a PNG byte slice.

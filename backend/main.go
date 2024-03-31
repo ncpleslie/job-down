@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"os"
 
-	firebase "github.com/ncpleslie/application-tracker/clients"
-	db "github.com/ncpleslie/application-tracker/clients/db"
-	storage "github.com/ncpleslie/application-tracker/clients/storage"
-	cfg "github.com/ncpleslie/application-tracker/config"
-	server "github.com/ncpleslie/application-tracker/server"
-	"github.com/ncpleslie/application-tracker/services"
+	firebase "github.com/ncpleslie/job-down/clients"
+	db "github.com/ncpleslie/job-down/clients/db"
+	storage "github.com/ncpleslie/job-down/clients/storage"
+	cfg "github.com/ncpleslie/job-down/config"
+	server "github.com/ncpleslie/job-down/server"
+	"github.com/ncpleslie/job-down/services"
 )
 
 func main() {
 	log := log.New(os.Stdout, "application-tracker: ", log.LstdFlags|log.Lshortfile)
-	log.Println("Application starting...")
+	log.Println("Application initializing...")
 	config := cfg.MustGenerateConfig()
 
 	app := firebase.Must(config.Firebase, log)

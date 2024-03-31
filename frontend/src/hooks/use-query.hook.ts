@@ -169,6 +169,7 @@ export const useAddJobMutation = () => {
         queryClient.setQueryData(["getJobById", job.id], () => job);
         queryClient.invalidateQueries({ queryKey: ["getJobs"] });
         queryClient.refetchQueries({ queryKey: ["getJobs"] });
+        queryClient.refetchQueries({ queryKey: ["getStats"] });
 
         readChunk();
       };
@@ -224,6 +225,7 @@ export const useUpdateJobMutation = () => {
       });
       queryClient.setQueryData(["getJobById", job.id], () => job);
       queryClient.refetchQueries({ queryKey: ["getJobs"] });
+      queryClient.refetchQueries({ queryKey: ["getStats"] });
     },
   });
 };
@@ -260,6 +262,37 @@ export const useDeleteJobMutation = () => {
       });
       queryClient.setQueryData(["getJobById", variables], () => null);
       queryClient.refetchQueries({ queryKey: ["getJobs"] });
+      queryClient.refetchQueries({ queryKey: ["getStats"] });
+    },
+  });
+};
+
+export const useGetJobStatsQuery = () => {
+  const [user] = useIdToken(auth);
+
+  return useQuery({
+    queryKey: ["getStats"],
+    queryFn: async () => {
+      const authToken = await user?.getIdToken();
+
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}/stats`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "An error has occurred: " + httpStatusToText(response.status),
+        );
+      }
+
+      console.log(await response.json());
+
+      return await response.json();
     },
   });
 };

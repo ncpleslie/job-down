@@ -3,8 +3,8 @@ package entities
 import (
 	"time"
 
-	"github.com/ncpleslie/application-tracker/models/requests"
-	"github.com/ncpleslie/application-tracker/models/responses"
+	"github.com/ncpleslie/job-down/models/requests"
+	"github.com/ncpleslie/job-down/models/responses"
 )
 
 type Job struct {

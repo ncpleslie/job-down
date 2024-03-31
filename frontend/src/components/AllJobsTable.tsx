@@ -205,7 +205,7 @@ const createColumns = (
         return (
           <div className="flex justify-center text-center capitalize">
             <div
-              className={cn("w-full rounded-lg", statusToBadgeColor(status))}
+              className={cn("w-[25ch] rounded-lg", statusToBadgeColor(status))}
             >
               <DropdownSelectInput
                 title={snakeCaseToTitleCase(status)}

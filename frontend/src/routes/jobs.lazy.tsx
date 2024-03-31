@@ -3,6 +3,7 @@ import { LoadingDialog } from "@/components/ui/loading-dialog";
 import { Suspense } from "react";
 import AllJobsTableAsync from "@/components/AllJobsTableAsync";
 import useHead from "@/hooks/use-head.hook";
+import { useGetJobStatsQuery } from "@/hooks/use-query.hook";
 
 export const Route = createLazyFileRoute("/jobs")({
   component: Index,
@@ -10,6 +11,7 @@ export const Route = createLazyFileRoute("/jobs")({
 
 function Index() {
   useHead("Jobs");
+  const { data } = useGetJobStatsQuery();
 
   return (
     <div className="mb-8">

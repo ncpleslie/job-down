@@ -10,7 +10,7 @@ export const formSchema = z.object({
     message: "Company must be at least 1 characters.",
   }),
   url: z.string().trim().url({
-    message: "Application URL must be a valid URL.",
+    message: "Job application URL must be a valid URL.",
   }),
   notes: z.string().optional(),
   status: z.string().trim().min(1, {

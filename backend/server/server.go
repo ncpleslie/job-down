@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ncpleslie/application-tracker/config"
-	"github.com/ncpleslie/application-tracker/services"
+	"github.com/ncpleslie/job-down/config"
+	"github.com/ncpleslie/job-down/services"
 )
 
 // NewServer creates a new http.Handler.
@@ -48,6 +48,7 @@ func addJobRoutes(
 	mux.Handle("POST /", handleJobPost(jobService))
 	mux.Handle("PATCH /{jobId}", handleJobPatch(jobService))
 	mux.Handle("DELETE /{jobId}", handleJobDelete(jobService))
+	mux.Handle("GET /stats", handleStatsGet(jobService))
 
 	var handler http.Handler = mux
 	handler = userContext(authService, handler)
