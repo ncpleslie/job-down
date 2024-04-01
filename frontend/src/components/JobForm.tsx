@@ -62,8 +62,9 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
     defaultValues: defaultValuesClone || {
       position: "",
       company: "",
-      url: "",
+      url: "https://",
       status: "applied",
+      notes: "",
     },
     disabled: disabled,
   });
@@ -120,7 +121,10 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
                   Engineer.
                 </FormDescription>
                 <FormControl>
-                  <Input placeholder="Software Engineer" {...field} />
+                  <Input
+                    placeholder="e.g. Rockstar Full Snack Software Engineer"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,7 +142,7 @@ const JobForm: React.FC<PropsWithChildren<JobFormProps>> = ({
                   The name of the Company you applied for. E.g. XYZ Corp.
                 </FormDescription>
                 <FormControl>
-                  <Input placeholder="XYZ Corp" {...field} />
+                  <Input placeholder="e.g. XYZ Corp" {...field} />
                 </FormControl>
 
                 <FormMessage />

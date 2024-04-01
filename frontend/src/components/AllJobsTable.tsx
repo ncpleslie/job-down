@@ -205,7 +205,7 @@ const createColumns = (
         return (
           <div className="flex justify-center text-center capitalize">
             <div
-              className={cn("w-full rounded-lg", statusToBadgeColor(status))}
+              className={cn("w-[25ch] rounded-lg", statusToBadgeColor(status))}
             >
               <DropdownSelectInput
                 title={snakeCaseToTitleCase(status)}
@@ -269,11 +269,13 @@ interface AllJobsTableProps {
   onViewJob: (job: JobResponse) => void;
   onUpdateJob: (job: JobResponse) => void;
   isPendingDelete: boolean;
+  addNewJobUrl: "/jobs/add/modal" | "/jobs/add";
 }
 
 const AllJobsTable: React.FC<AllJobsTableProps> = ({
   jobs,
   isPendingDelete,
+  addNewJobUrl,
   onDeleteJob,
   onDeleteJobs,
   onViewJob,
@@ -305,7 +307,7 @@ const AllJobsTable: React.FC<AllJobsTableProps> = ({
           </CardHeader>
           <CardContent className="flex w-full justify-center">
             <Button variant="outline" asChild>
-              <Link to="/jobs/add/modal">
+              <Link to={addNewJobUrl}>
                 <PlusSquare className="mr-2 h-6 w-6" />
                 New Job
               </Link>

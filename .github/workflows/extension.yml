@@ -82,6 +82,8 @@ jobs:
 
   build-dev:
     environment: development
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
+    continue-on-error: true
     needs: [test, lint]
     runs-on: ubuntu-latest
     env:
@@ -119,6 +121,7 @@ jobs:
 
   build-prod:
     environment: production
+    if: github.event_name == 'release'
     continue-on-error: true
     needs: [test, lint]
     runs-on: ubuntu-latest

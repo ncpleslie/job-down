@@ -49,7 +49,7 @@ export function DropdownSelectInput({
           className="w-full bg-transparent px-1 capitalize md:px-4"
           disabled={isPendingUpdate}
         >
-          <span className="w-full">{title}</span>
+          <span className="w-full truncate">{title}</span>
           {isPendingUpdate && (
             <Loader2 className="ml-auto h-4 w-4 animate-spin" />
           )}

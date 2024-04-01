@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ncpleslie/application-tracker/models/requests"
-	"github.com/ncpleslie/application-tracker/models/responses"
-	"github.com/ncpleslie/application-tracker/services"
+	"github.com/ncpleslie/job-down/models/requests"
+	"github.com/ncpleslie/job-down/models/responses"
+	"github.com/ncpleslie/job-down/services"
 )
 
 // Returns a handler function for the GET /jobs/{jobId} route.
@@ -119,5 +119,22 @@ func handleJobDelete(jobService *services.JobService) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// Returns a handler function for the GET /jobs/stats route.
+// It retrieves stats for the provided user ID from the JobService.
+//
+// GET /jobs/stats
+func handleStatsGet(jobService *services.JobService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := services.GetCtxUser(r.Context())
+
+		stats, err := jobService.GetStats(r.Context(), user.UID)
+		if err != nil {
+			encode(w, r, http.StatusInternalServerError, responses.Error{Message: fmt.Sprintf("Error retrieving stats. Error: %s", err.Error())})
+		}
+
+		encode(w, r, http.StatusOK, stats)
 	}
 }

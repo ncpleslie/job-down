@@ -7,7 +7,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
-	"github.com/ncpleslie/application-tracker/models/entities"
+	"github.com/ncpleslie/job-down/models/entities"
 	"google.golang.org/api/iterator"
 )
 
@@ -46,6 +46,7 @@ func (d *DB) AddJob(ctx context.Context, userId string, job entities.Job) (entit
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
 		Statuses:      job.Statuses,
+		Notes:         job.Notes,
 	}, nil
 }
 
@@ -73,6 +74,7 @@ func (d *DB) GetJob(ctx context.Context, userId string, jobId string) (entities.
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
 		Statuses:      job.Statuses,
+		Notes:         job.Notes,
 	}, nil
 }
 
@@ -93,6 +95,7 @@ func (d *DB) UpdateJob(ctx context.Context, userId string, jobId string, job ent
 		CreatedAt:     job.CreatedAt,
 		UpdatedAt:     job.UpdatedAt,
 		Statuses:      job.Statuses,
+		Notes:         job.Notes,
 	}, nil
 }
 

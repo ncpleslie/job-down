@@ -13,6 +13,7 @@ import { auth } from "@/constants/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { env } from "@/env";
 import AppConstants from "@/constants/app.constants";
+import StatsResponse from "@/models/responses/stats.response";
 
 const getBaseUrl = () => {
   if (import.meta.env.MODE === "production") {
@@ -169,6 +170,7 @@ export const useAddJobMutation = () => {
         queryClient.setQueryData(["getJobById", job.id], () => job);
         queryClient.invalidateQueries({ queryKey: ["getJobs"] });
         queryClient.refetchQueries({ queryKey: ["getJobs"] });
+        queryClient.refetchQueries({ queryKey: ["getStats"] });
 
         readChunk();
       };
@@ -224,6 +226,7 @@ export const useUpdateJobMutation = () => {
       });
       queryClient.setQueryData(["getJobById", job.id], () => job);
       queryClient.refetchQueries({ queryKey: ["getJobs"] });
+      queryClient.refetchQueries({ queryKey: ["getStats"] });
     },
   });
 };
@@ -260,6 +263,35 @@ export const useDeleteJobMutation = () => {
       });
       queryClient.setQueryData(["getJobById", variables], () => null);
       queryClient.refetchQueries({ queryKey: ["getJobs"] });
+      queryClient.refetchQueries({ queryKey: ["getStats"] });
+    },
+  });
+};
+
+export const useGetJobStatsQuery = () => {
+  const [user] = useIdToken(auth);
+
+  return useQuery({
+    queryKey: ["getStats"],
+    queryFn: async () => {
+      const authToken = await user?.getIdToken();
+
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}/stats`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "An error has occurred: " + httpStatusToText(response.status),
+        );
+      }
+
+      return new StatsResponse(await response.json());
     },
   });
 };

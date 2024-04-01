@@ -39,6 +39,7 @@ const AllJobsTableAsync = () => {
       onUpdateJob={onUpdateJob}
       isPendingDelete={isPendingDelete}
       jobs={jobs}
+      addNewJobUrl="/jobs/add/modal"
     />
   );
 };

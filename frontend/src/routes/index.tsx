@@ -75,7 +75,7 @@ function Index() {
         <img src="/icon.png" alt="logo" className="h-24 w-24" />
         <h1 className="text-black">Job Down - Job Application Tracker</h1>
       </div>
-      <div className="flex w-full items-center justify-center p-8 lg:w-[500px]">
+      <div className="flex w-full items-center justify-center p-2 md:p-8 lg:w-[500px]">
         <LoginForm
           onSubmit={onLoginSubmit}
           onGuestLogin={onGuestLogin}
