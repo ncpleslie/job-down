@@ -23,10 +23,6 @@ const getBaseUrl = () => {
   return "/api";
 };
 
-/**
- * A hook to get a job by its ID.
- * @param jobId - The job's id.
- */
 export const useGetJobByIdQuery = (jobId: string, token?: string) => {
   const [user] = useIdToken(auth);
 
@@ -55,9 +51,6 @@ export const useGetJobByIdQuery = (jobId: string, token?: string) => {
   });
 };
 
-/**
- * A hook to get all jobs.
- */
 export const useGetJobsSuspenseQuery = (token?: string) => {
   const [user] = useIdToken(auth);
 
@@ -86,6 +79,39 @@ export const useGetJobsSuspenseQuery = (token?: string) => {
   });
 };
 
+/**
+ * This should only be used with the extension.
+ * Use useGetJobsSuspenseQuery for the web app.
+ */
+export const useGetJobsQuery = (token?: string) => {
+  const [user] = useIdToken(auth);
+
+  return useQuery({
+    queryKey: ["getJobs"],
+    queryFn: async () => {
+      const authToken = token ?? (await user?.getIdToken());
+
+      const response = await fetch(
+        `${getBaseUrl()}${AppConstants.JobsApiRoute}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      if (!response.ok) {
+        throw new Error(
+          "An error has occurred: " + httpStatusToText(response.status),
+        );
+      }
+      const jobs = (await response.json()) as JobsResponseJson;
+
+      return new JobsResponse(jobs).jobs;
+    },
+    enabled: Boolean(token),
+  });
+};
+
 export const useCreateJobQuery = () => {
   const queryClient = useQueryClient();
   return useQuery({
@@ -101,9 +127,6 @@ export const useCreateJobQuery = () => {
   });
 };
 
-/**
- * A hook to add a job.
- */
 export const useAddJobMutation = () => {
   const [user] = useIdToken(auth);
   const queryClient = useQueryClient();
@@ -180,9 +203,6 @@ export const useAddJobMutation = () => {
   });
 };
 
-/**
- * A hook to update a job.
- */
 export const useUpdateJobMutation = () => {
   const [user] = useIdToken(auth);
   const queryClient = useQueryClient();
@@ -231,9 +251,6 @@ export const useUpdateJobMutation = () => {
   });
 };
 
-/**
- * A hook to delete a job by its ID.
- */
 export const useDeleteJobMutation = () => {
   const [user] = useIdToken(auth);
   const queryClient = useQueryClient();

@@ -4,11 +4,11 @@ import {
   JobResponse,
   LoadingDialog,
   useDeleteJobMutation,
-  useGetJobsSuspenseQuery,
   useUpdateJobMutation,
 } from "@application-tracker/frontend";
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import useMessage from "@pages/popup/hooks/use-message.hook";
+import { useGetJobsQuery } from "@application-tracker/frontend/src/hooks/use-query.hook";
 
 export const Route = createFileRoute("/jobs/")({
   component: Index,
@@ -19,68 +19,57 @@ function Index() {
     data: token,
     isPending,
     callAsync: getTokenAsync,
-  } = useMessage({ type: "userToken" }, { enabled: false });
-
-  useEffect(() => {
-    if (!token) {
-      getTokenAsync({ type: "userToken" });
-    }
-  }, [token]);
-
-  if (isPending) {
-    return <LoadingDialog isLoading={true}>Loading</LoadingDialog>;
-  }
-
-  return (
-    <div>
-      <Suspense
-        fallback={<LoadingDialog isLoading={true}>Loading</LoadingDialog>}
-      >
-        {token && <AllJobsTableAsync token={token} />}
-      </Suspense>
-    </div>
-  );
-}
-
-interface AllJobsTableAsyncProps {
-  token: string;
-}
-
-const AllJobsTableAsync: React.FC<AllJobsTableAsyncProps> = ({ token }) => {
+  } = useMessage({ type: "userToken" });
   const navigate = useNavigate();
-  const { data: jobs } = useGetJobsSuspenseQuery(token);
-  const { mutate, isPending: isPendingDelete } = useDeleteJobMutation();
-  const { mutate: updateJob } = useUpdateJobMutation();
+  const { data: jobs, isPending: isPendingJobs } = useGetJobsQuery(token || "");
+  const { mutateAsync, isPending: isPendingDelete } = useDeleteJobMutation();
+  const { mutateAsync: updateJobAsync } = useUpdateJobMutation();
 
-  const onDeleteJob = (job: JobResponse) => {
-    mutate({ jobId: job.id, token });
+  const onDeleteJob = async (job: JobResponse) => {
+    if (!token) {
+    }
+    await getTokenAsync({ type: "userToken" });
+    await mutateAsync({ jobId: job.id, token: token || "" });
   };
 
-  const onDeleteJobs = (jobs: JobResponse[]) => {
-    jobs.forEach((job) => {
-      mutate({ jobId: job.id, token });
+  const onDeleteJobs = async (jobs: JobResponse[]) => {
+    await getTokenAsync({ type: "userToken" });
+    jobs.forEach(async (job) => {
+      if (!token) {
+        return;
+      }
+
+      await mutateAsync({ jobId: job.id, token });
     });
   };
 
-  const onUpdateJob = (job: JobResponse) => {
-    updateJob({ payload: job, token });
+  const onUpdateJob = async (job: JobResponse) => {
+    await getTokenAsync({ type: "userToken" });
+    await updateJobAsync({ payload: job, token });
   };
 
   const onViewJob = (job: JobResponse) => {
     navigate({ to: `/jobs/$jobId`, params: { jobId: job.id } });
   };
 
+  if (isPending) {
+    return <LoadingDialog isLoading={true}>Loading</LoadingDialog>;
+  }
+
   return (
     <div className="mx-4">
-      <AllJobsTable
-        onDeleteJob={onDeleteJob}
-        onDeleteJobs={onDeleteJobs}
-        onViewJob={onViewJob}
-        onUpdateJob={onUpdateJob}
-        isPendingDelete={isPendingDelete}
-        jobs={jobs}
-        addNewJobUrl="/jobs/add"
-      />
+      {jobs && (
+        <AllJobsTable
+          onDeleteJob={onDeleteJob}
+          onDeleteJobs={onDeleteJobs}
+          onViewJob={onViewJob}
+          onUpdateJob={onUpdateJob}
+          isPendingDelete={isPendingDelete}
+          jobs={jobs}
+          addNewJobUrl="/jobs/add"
+        />
+      )}
+      {isPendingJobs && <LoadingDialog isLoading={true}>Loading</LoadingDialog>}
     </div>
   );
-};
+}
