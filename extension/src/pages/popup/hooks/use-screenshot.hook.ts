@@ -5,9 +5,9 @@ const useScreenshot = () => {
   const [capturing, setCapturing] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  async function captureFullPageScreenshot(
+  const captureFullPageScreenshot = async (
     callback: (dataUrl: string) => void
-  ) {
+  ) => {
     if (capturing) {
       return;
     }
@@ -29,15 +29,41 @@ const useScreenshot = () => {
         return;
       }
 
+      // Delete "fixed" CSS properties to avoid overlapping elements
+      await chrome.scripting.executeScript({
+        target: { tabId: activeTab.id },
+        function: async () => {
+          const elements = document.querySelectorAll("*");
+
+          for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const style = window.getComputedStyle(element);
+
+            if (style["position"] === "fixed") {
+              (element as HTMLElement).setAttribute(
+                "style",
+                "position:static !important"
+              );
+              (element as HTMLElement).setAttribute(
+                "job-down-static",
+                "active"
+              );
+            }
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        },
+      });
+
       await chrome.scripting.executeScript({
         target: { tabId: activeTab.id },
         function: async () => {
           window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 200));
         },
       });
 
-      async function captureScreenshot() {
+      const captureScreenshot = async () => {
         const screenshot = await new Promise<string>((resolve) => {
           chrome.tabs.captureVisibleTab({ format: "png" }, (dataUrl) => {
             resolve(dataUrl);
@@ -62,12 +88,25 @@ const useScreenshot = () => {
         });
 
         if (reachedBottom[0].result) {
+          await chrome.scripting.executeScript({
+            target: { tabId: activeTab.id },
+            function: async () => {
+              const staticElements = document.querySelectorAll(
+                '[job-down-static="active"]'
+              );
+              staticElements.forEach((element) => {
+                element.removeAttribute("style");
+                element.removeAttribute("job-down-static");
+              });
+            },
+          });
+
           await stitchScreenshots(dataUrls, callback);
         } else {
           await new Promise((resolve) => setTimeout(resolve, 500));
           await captureScreenshot();
         }
-      }
+      };
 
       await captureScreenshot();
       setCapturing(false);
@@ -75,7 +114,7 @@ const useScreenshot = () => {
       setIsError(true);
       setCapturing(false);
     }
-  }
+  };
 
   async function stitchScreenshots(
     dataUrls: string[],

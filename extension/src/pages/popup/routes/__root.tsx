@@ -13,9 +13,14 @@ import {
 import { useEffect } from "react";
 import { PlusSquare } from "lucide-react";
 import { env } from "@src/env";
+import { useVisible } from "../hooks/use-visible.hook";
 
 export const Route = createRootRoute({
   component: () => {
+    const visibilityChange = useVisible();
+    const { callAsync: getTokenAsync } = useMessage({
+      type: "userToken",
+    });
     const { data: user, isPending, error } = useMessage({ type: "user" });
     const { callAsync: signOutAsync } = useMessage(
       { type: "signOut" },
@@ -42,6 +47,14 @@ export const Route = createRootRoute({
         navigate({ to: "/" });
       }
     }, [user]);
+
+    // Grab a new user token when the visibility changes to
+    // avoid having a stale token each time the popup is opened.
+    useEffect(() => {
+      if (visibilityChange) {
+        getTokenAsync({ type: "userToken" });
+      }
+    }, [visibilityChange]);
 
     if (isPending) {
       return <LoadingDialog isLoading={true}>Authenticating</LoadingDialog>;

@@ -84,18 +84,14 @@ export const useGetJobsSuspenseQuery = (token?: string) => {
  * Use useGetJobsSuspenseQuery for the web app.
  */
 export const useGetJobsQuery = (token?: string) => {
-  const [user] = useIdToken(auth);
-
   return useQuery({
     queryKey: ["getJobs"],
     queryFn: async () => {
-      const authToken = token ?? (await user?.getIdToken());
-
       const response = await fetch(
         `${getBaseUrl()}${AppConstants.JobsApiRoute}`,
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );

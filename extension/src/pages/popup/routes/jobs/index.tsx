@@ -6,7 +6,6 @@ import {
   useDeleteJobMutation,
   useUpdateJobMutation,
 } from "@application-tracker/frontend";
-import { useEffect } from "react";
 import useMessage from "@pages/popup/hooks/use-message.hook";
 import { useGetJobsQuery } from "@application-tracker/frontend/src/hooks/use-query.hook";
 
@@ -21,13 +20,13 @@ function Index() {
     callAsync: getTokenAsync,
   } = useMessage({ type: "userToken" });
   const navigate = useNavigate();
-  const { data: jobs, isPending: isPendingJobs } = useGetJobsQuery(token || "");
+  const { data: jobs, isPending: isPendingJobs } = useGetJobsQuery(
+    token as string | undefined
+  );
   const { mutateAsync, isPending: isPendingDelete } = useDeleteJobMutation();
   const { mutateAsync: updateJobAsync } = useUpdateJobMutation();
 
   const onDeleteJob = async (job: JobResponse) => {
-    if (!token) {
-    }
     await getTokenAsync({ type: "userToken" });
     await mutateAsync({ jobId: job.id, token: token || "" });
   };
@@ -52,10 +51,6 @@ function Index() {
     navigate({ to: `/jobs/$jobId`, params: { jobId: job.id } });
   };
 
-  if (isPending) {
-    return <LoadingDialog isLoading={true}>Loading</LoadingDialog>;
-  }
-
   return (
     <div className="mx-4">
       {jobs && (
@@ -69,7 +64,9 @@ function Index() {
           addNewJobUrl="/jobs/add"
         />
       )}
-      {isPendingJobs && <LoadingDialog isLoading={true}>Loading</LoadingDialog>}
+      {(isPendingJobs || isPending) && (
+        <LoadingDialog isLoading={true}>Loading</LoadingDialog>
+      )}
     </div>
   );
 }
