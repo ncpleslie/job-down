@@ -97,11 +97,19 @@ const createColumns = (
           </Button>
         );
       },
-      cell: ({ row }) => (
-        <div className="max-w-[15ch] truncate text-ellipsis text-left text-sm md:max-w-full">
-          {row.getValue("company")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const job = row.original;
+
+        return (
+          <Button
+            variant="link"
+            className="max-w-[15ch] truncate text-ellipsis text-left text-sm font-normal md:max-w-full"
+            onClick={() => onViewJob(job)}
+          >
+            {row.getValue("company")}
+          </Button>
+        );
+      },
     },
     {
       accessorKey: "position",
@@ -118,10 +126,16 @@ const createColumns = (
         );
       },
       cell: ({ row }) => {
+        const job = row.original;
+
         return (
-          <div className="max-w-[15ch] truncate text-left text-sm md:max-w-full">
+          <Button
+            variant="link"
+            className="max-w-[15ch] truncate text-left text-sm font-normal md:max-w-full"
+            onClick={() => onViewJob(job)}
+          >
             {row.getValue("position")}
-          </div>
+          </Button>
         );
       },
       meta: {

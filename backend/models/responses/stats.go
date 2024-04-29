@@ -1,9 +1,9 @@
 package responses
 
 type Stats struct {
-	Total      int  `json:"total"`
-	Current    Stat `json:"current"`
-	Historical Stat `json:"historical"`
+	Total      int   `json:"total"`
+	Current    *Stat `json:"current"`
+	Historical *Stat `json:"historical"`
 }
 
 type Stat struct {

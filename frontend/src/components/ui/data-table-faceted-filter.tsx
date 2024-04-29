@@ -38,7 +38,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="capitalize">
+        <Button variant="outline" className="w-full capitalize">
           <PlusCircleIcon className="mr-2 h-4 w-4" />
 
           {title}

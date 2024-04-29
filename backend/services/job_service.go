@@ -202,17 +202,15 @@ func (s *JobService) DeleteJob(ctx context.Context, userId string, jobId string)
 
 // GetStats returns the stats for a user.
 // The stats include the total number of jobs, the number of jobs in each status, and the number of jobs in each status historically.
-//
-// TODO: Perhaps refactor this to be persistent in the database
-//
-// E.g have a collection of stats for each user and update it every time a job is added/updated.
 func (s *JobService) GetStats(ctx context.Context, userId string) (responses.Stats, error) {
 	jobs, err := s.DB.GetJobs(ctx, userId)
 	if err != nil {
 		return responses.Stats{}, err
 	}
 
-	var stats responses.Stats
+	stats := responses.Stats{}
+	stats.Current = &responses.Stat{}
+	stats.Historical = &responses.Stat{}
 	for _, job := range jobs {
 		mostRecentStatus := job.Statuses[0]
 		for _, status := range job.Statuses {
@@ -221,54 +219,40 @@ func (s *JobService) GetStats(ctx context.Context, userId string) (responses.Sta
 			}
 		}
 
-		// TODO: Refactor this to reduce duplication
-		switch mostRecentStatus.Status {
-		case "applied":
-			stats.Current.Applied++
-		case "phone_screen":
-		case "coding_challenge":
-		case "first_interview":
-		case "second_interview":
-		case "final_interview":
-			stats.Current.Interview++
-		case "offer":
-			stats.Current.Offer++
-		case "rejected":
-			stats.Current.Rejected++
-		case "accepted":
-			stats.Current.Accepted++
-		case "withdrawn":
-			stats.Current.Withdrawn++
-		default:
-			stats.Current.Other++
-		}
+		incrementStatsField(stats.Current, mostRecentStatus.Status)
 
 		for _, status := range job.Statuses {
-			switch status.Status {
-			case "applied":
-				stats.Historical.Applied++
-			case "phone_screen":
-			case "coding_challenge":
-			case "first_interview":
-			case "second_interview":
-			case "final_interview":
-				stats.Historical.Interview++
-			case "offer":
-				stats.Historical.Offer++
-			case "rejected":
-				stats.Historical.Rejected++
-			case "accepted":
-				stats.Historical.Accepted++
-			case "withdrawn":
-				stats.Historical.Withdrawn++
-			default:
-				stats.Historical.Other++
-			}
+			incrementStatsField(stats.Historical, status.Status)
 		}
 	}
 
 	stats.Total = len(jobs)
 	return stats, nil
+}
+
+// Increments the appropriate field in the stats struct based on the status.
+// Returns the updated stats struct.
+func incrementStatsField(stats *responses.Stat, status string) {
+	switch status {
+	case "applied":
+		stats.Applied++
+	case "phone_screen":
+	case "coding_challenge":
+	case "first_interview":
+	case "second_interview":
+	case "final_interview":
+		stats.Interview++
+	case "offer":
+		stats.Offer++
+	case "rejected":
+		stats.Rejected++
+	case "accepted":
+		stats.Accepted++
+	case "withdrawn":
+		stats.Withdrawn++
+	default:
+		stats.Other++
+	}
 }
 
 // Converts a PDF byte slice to a PNG byte slice.
