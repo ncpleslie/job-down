@@ -12,6 +12,9 @@ build:
 run:
 	@go run cmd/api/main.go
 
+lint:
+	@golangci-lint run
+
 # # Create DB container
 # docker-run:
 # 	@if docker compose up 2>/dev/null; then \
@@ -30,10 +33,10 @@ run:
 # 		docker-compose down; \
 # 	fi
 
-# # Test the application
-# test:
-# 	@echo "Testing..."
-# 	@go test ./tests -v
+# Test the application
+test:
+	@echo "Testing..."
+	@go test ./tests -v
 
 # Clean the binary
 clean:
