@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ncpleslie/job-down/models/requests"
-	"github.com/ncpleslie/job-down/models/responses"
-	"github.com/ncpleslie/job-down/services"
+	"github.com/ncpleslie/job-down/internal/models/requests"
+	"github.com/ncpleslie/job-down/internal/models/responses"
+	"github.com/ncpleslie/job-down/internal/services"
 )
 
 // Returns a handler function for the GET /jobs/{jobId} route.

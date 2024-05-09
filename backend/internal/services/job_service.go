@@ -14,11 +14,11 @@ import (
 
 	"github.com/gen2brain/go-fitz"
 
-	"github.com/ncpleslie/job-down/clients/db"
-	store "github.com/ncpleslie/job-down/clients/storage"
-	"github.com/ncpleslie/job-down/models/entities"
-	requests "github.com/ncpleslie/job-down/models/requests"
-	"github.com/ncpleslie/job-down/models/responses"
+	"github.com/ncpleslie/job-down/internal/db"
+	"github.com/ncpleslie/job-down/internal/models/entities"
+	requests "github.com/ncpleslie/job-down/internal/models/requests"
+	"github.com/ncpleslie/job-down/internal/models/responses"
+	store "github.com/ncpleslie/job-down/internal/storage"
 )
 
 type JobService struct {
@@ -105,7 +105,9 @@ func (s *JobService) CreateNewJob(ctx context.Context, userId string, job reques
 			errChan <- err
 			return
 		}
-
+		// Files can be uploaded in multiple formats.
+		// This includes PDFs that can't be displayed in the frontend.
+		// To handle this, we convert the PDF (and all its pages) to a PNG image.
 		mimeType := http.DetectContentType(b)
 		if mimeType == "application/pdf" {
 			b, err = pdfBytesToPngBytes(b)

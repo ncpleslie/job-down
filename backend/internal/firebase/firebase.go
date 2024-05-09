@@ -7,7 +7,7 @@ import (
 	b64 "encoding/base64"
 
 	firebase "firebase.google.com/go/v4"
-	"github.com/ncpleslie/job-down/config"
+	"github.com/ncpleslie/job-down/internal/config"
 	"google.golang.org/api/option"
 )
 
