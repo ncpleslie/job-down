@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ncpleslie/job-down/services"
+	"github.com/ncpleslie/job-down/internal/services"
 )
 
 func cors(clientAddress string, next http.Handler) http.Handler {

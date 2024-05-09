@@ -3,57 +3,38 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 
-	"github.com/ncpleslie/job-down/config"
-	"github.com/ncpleslie/job-down/services"
+	"github.com/ncpleslie/job-down/internal/config"
+	"github.com/ncpleslie/job-down/internal/services"
 )
 
-// NewServer creates a new http.Handler.
+type Server struct {
+	authService *services.AuthService
+	jobService  *services.JobService
+	config      config.ServerConfig
+}
+
+// NewServer creates a new http.Server.
 // It sets up the routes and middleware for the server.
 func NewServer(
 	config config.ServerConfig,
 	authService *services.AuthService,
 	jobService *services.JobService,
-) http.Handler {
-	mux := http.NewServeMux()
-	// Unauthenticated routes
-	mux.Handle("/healthz/", http.StripPrefix("/healthz", addHealthRoutes()))
+) *http.Server {
+	NewServer := &Server{
+		authService: authService,
+		jobService:  jobService,
+		config:      config,
+	}
 
-	// Job routes. Require authentication.
-	mux.Handle("/jobs/", http.StripPrefix("/jobs", addJobRoutes(authService, jobService)))
+	httpServer := &http.Server{
+		Addr:    net.JoinHostPort(NewServer.config.Host, NewServer.config.Port),
+		Handler: NewServer.RegisterRouters(),
+	}
 
-	var handler http.Handler = mux
-	handler = cors(config.ClientAddress, handler)
-
-	return handler
-}
-
-func addHealthRoutes() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		encode(w, r, http.StatusOK, "ok")
-	})
-
-	return mux
-}
-
-func addJobRoutes(
-	authService *services.AuthService,
-	jobService *services.JobService,
-) http.Handler {
-	mux := http.NewServeMux()
-	mux.Handle("GET /", handleAllJobsGet(jobService))
-	mux.Handle("GET /{jobId}", handleJobGet(jobService))
-	mux.Handle("POST /", handleJobPost(jobService))
-	mux.Handle("PATCH /{jobId}", handleJobPatch(jobService))
-	mux.Handle("DELETE /{jobId}", handleJobDelete(jobService))
-	mux.Handle("GET /stats", handleStatsGet(jobService))
-
-	var handler http.Handler = mux
-	handler = userContext(authService, handler)
-
-	return handler
+	return httpServer
 }
 
 // Writes the provided value to the http.ResponseWriter.

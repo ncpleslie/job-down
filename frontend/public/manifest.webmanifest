@@ -2,12 +2,14 @@
   "name": "Job Down | Application Tracker",
   "short_name": "Job Down",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "lang": "en",
   "scope": "/",
   "description": "Track your job applications from applying to hired",
   "theme_color": "#ffffff",
+  "splash_pages": null,
   "icons": [
     { "src": "maskable-icon.png", "sizes": "512x512", "type": "image/png" },
     {

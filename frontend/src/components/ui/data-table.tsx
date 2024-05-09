@@ -23,6 +23,7 @@ import { DataTableViewOptions } from "./data-table-view-options";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { X } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -94,21 +95,32 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       <div className="flex flex-wrap items-center gap-4 py-4">
-        <Input
-          placeholder={`Filter by ${filterOptions.inputFilterKey}...`}
-          value={
-            (table
-              .getColumn(filterOptions.inputFilterKey)
-              ?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table
-              .getColumn(filterOptions.inputFilterKey)
-              ?.setFilterValue(event.target.value)
-          }
-          className="w-full md:max-w-sm"
-        />
-        <div className="flex gap-4">
+        <div className="flex w-full flex-row gap-1 md:max-w-sm">
+          <Input
+            placeholder={`Filter by ${filterOptions.inputFilterKey}...`}
+            value={
+              (table
+                .getColumn(filterOptions.inputFilterKey)
+                ?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table
+                .getColumn(filterOptions.inputFilterKey)
+                ?.setFilterValue(event.target.value)
+            }
+            className="w-full md:max-w-sm"
+          />
+          <Button
+            title="Clear filter"
+            variant="outline"
+            onClick={() => {
+              table.getColumn(filterOptions.inputFilterKey)?.setFilterValue("");
+            }}
+          >
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
+        <div className="flex w-full gap-4 md:max-w-xs">
           {filterOptions.dropdownFilterKeys.map((filterOption) => {
             return (
               table.getColumn(filterOption) && (
